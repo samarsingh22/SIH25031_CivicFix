@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Signup - CivicFix{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-7 col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="mb-3 text-center">{% block heading %}{% endblock %}</h3>
+        <form method="post" action="">
+          {% csrf_token %}
+          {% if form.errors %}
+            <div class="alert alert-danger">
+              Please fix the errors below.
+            </div>
+          {% endif %}
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors|striptags }}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors|striptags }}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors|striptags }}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Phone</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}<div class="text-danger small">{{ form.phone.errors|striptags }}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            {{ form.address }}
+            {% if form.address.errors %}<div class="text-danger small">{{ form.address.errors|striptags }}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            {{ form.password }}
+            {% if form.password.errors %}<div class="text-danger small">{{ form.password.errors|striptags }}</div>{% endif %}
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Create account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

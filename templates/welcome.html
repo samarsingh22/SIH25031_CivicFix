@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Welcome - CivicFix{% endblock %}
+{% block body_class %}welcome-page{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/welcome.css' %}">
+{% endblock %}
+
+{% block content %}
+  <section class="welcome-hero mb-4">
+    <div class="container py-4">
+      <h1 class="display-6 mb-2">Hello, {{ request.user.first_name|default:request.user.username }} 👋</h1>
+      <p class="lead mb-4">Welcome to CivicFix. Use the dashboard to access your tools and manage your tasks.</p>
+      <a class="btn btn-light btn-lg text-primary" href="{% if request.user.role == 'citizen' %}{% url 'dashboard_citizen' %}{% elif request.user.role == 'authority' %}{% url 'dashboard_authority' %}{% else %}{% url 'dashboard_admin' %}{% endif %}">
+        EXPLORE
+      </a>
+    </div>
+  </section>
+
+  <div class="welcome-divider"></div>
+
+  <section class="welcome-cards">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Your Role</h5>
+            <p class="card-text text-capitalize mb-0">{{ request.user.role }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Quick Links</h5>
+            <ul class="list-unstyled mb-0">
+              <li><a href="{% url 'home' %}">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Next steps</h5>
+            <p class="card-text mb-0">Enter the EXPLORE button to start working with your assigned tools.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,192 @@
+/* 🌟 Root Colors (modern accent palette) */
+:root {
+  --accent-teal: #20c997;
+  --accent-sky: #0dcaf0;
+  --accent-cyan: #17a2b8;
+  --accent-blue-light: #6ea8fe;
+  --text-dark: #212529;
+  --text-light: #f8f9fa;
+  --bg-light: #fdfdfd;
+  --shadow-soft: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+
+
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, rgba(13,110,253,0.35), rgba(13,110,253,0.15));
+  /* 👆 now the blue background spans the entire page */
+}
+
+.hero-section {
+  width: 100vw;
+  height: 100vh; /* still takes one full viewport height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 0 1rem;
+}
+
+
+#hero-video {
+  position: absolute; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  object-fit: cover; 
+  z-index: 1; 
+  opacity: 0.25;
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.2));
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative; 
+  z-index: 3; 
+  color: var(--text-light);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-content h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  margin-bottom: 2rem;
+  color: rgba(255,255,255,0.9);
+}
+
+.hero-content .btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  background: var(--accent-teal);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.hero-content .btn:hover {
+  background: var(--accent-sky);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Floating elements */
+.floating-elements { 
+  position: absolute; 
+  inset: 0; 
+  z-index: 2; 
+  pointer-events: none; 
+}
+
+.floating-icon { 
+  position: absolute; 
+  color: #fff; 
+  opacity: 0.6; 
+  font-size: 1.8rem; 
+  animation: float 6s ease-in-out infinite; 
+}
+
+@keyframes float { 
+  0%, 100% { transform: translateY(0); } 
+  50% { transform: translateY(-15px); } 
+}
+
+/* 🌟 Section Divider */
+.section-divider { 
+  height: 3px; 
+  background: linear-gradient(to right, var(--accent-teal), var(--accent-sky)); 
+  margin: 2rem 0; 
+  border-radius: 2px;
+}
+
+/* 🌟 Stats Section */
+.stats-section .stat-card { 
+  background: var(--bg-light); 
+  border-radius: 16px; 
+  box-shadow: var(--shadow-soft); 
+  padding: 25px; 
+  transition: transform 0.3s ease; 
+}
+
+.stats-section .stat-card:hover { 
+  transform: translateY(-6px); 
+}
+
+.stat-icon { font-size: 2rem; color: var(--accent-sky); margin-bottom: 0.5rem; }
+.stat-number { font-weight: 700; font-size: 2rem; color: var(--text-dark); }
+.stat-label { color: #6c757d; font-size: 0.95rem; }
+
+/* 🌟 How it works */
+.how-card { 
+  border-radius: 16px; 
+  box-shadow: var(--shadow-soft); 
+  padding: 20px; 
+  transition: transform 0.3s ease; 
+}
+.how-card:hover { transform: translateY(-5px); }
+
+.how-icon { 
+  width: 50px; height: 50px; 
+  border-radius: 12px; 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 1.5rem;
+}
+.bg-warning-soft { background: rgba(255,193,7,0.2); }
+.bg-info-soft { background: rgba(13,202,240,0.2); }
+.bg-success-soft { background: rgba(25,135,84,0.2); }
+
+/* 🌟 Testimonials */
+.testimonials-section .testimonial-card { 
+  background: #fff; 
+  border-radius: 16px; 
+  box-shadow: var(--shadow-soft); 
+  padding: 25px; 
+  height: 100%; 
+  transition: transform 0.3s ease;
+}
+.testimonials-section .testimonial-card:hover {
+  transform: translateY(-6px);
+}
+.testimonial-text { color: #495057; font-style: italic; line-height: 1.6; }
+.author-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
+.author-name { font-weight: 600; }
+.author-location { font-size: 0.9rem; color: #6c757d; }
+
+/* 🌟 Responsive Adjustments */
+@media (max-width: 768px) {
+  .hero-content h1 { font-size: 2rem; }
+  .hero-content p { font-size: 1rem; }
+  .stats-section .stat-card { text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .hero-section { padding: 2rem 1rem; }
+  .hero-content h1 { font-size: 1.75rem; }
+  .hero-content p { font-size: 0.95rem; }
+  .hero-content .btn { width: 100%; }
+}

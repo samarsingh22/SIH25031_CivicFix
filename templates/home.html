@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home - CivicFix{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/home-override.css' %}">
+{% endblock %}
+
+{% block content %}
+  <!-- Hero Section -->
+  <section class="hero-section text-white text-center position-relative overflow-hidden">
+    <!-- Animated Background Video -->
+    <video playsinline autoplay muted loop id="hero-video">
+      <source src="https://videos.pexels.com/video-files/3129957/3129957-uhd_3840_2160_30fps.mp4" type="video/mp4">
+      <source src="https://videos.pexels.com/video-files/2795405/2795405-uhd_3840_2160_25fps.mp4" type="video/mp4">
+    </video>
+
+    <!-- Floating Elements -->
+    <div class="floating-elements">
+      <div class="floating-icon" style="top: 20%; left: 10%; animation-delay: 0s;"><i class="fas fa-city"></i></div>
+      <div class="floating-icon" style="top: 30%; right: 15%; animation-delay: 2s;"><i class="fas fa-tools"></i></div>
+      <div class="floating-icon" style="bottom: 30%; left: 20%; animation-delay: 4s;"><i class="fas fa-users"></i></div>
+      <div class="floating-icon" style="bottom: 20%; right: 10%; animation-delay: 6s;"><i class="fas fa-chart-line"></i></div>
+    </div>
+
+    <div class="container position-relative">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="hero-content animate-fade-in-up">
+            <h1 class="display-4 fw-bold mb-3">Fix your city, one report at a time</h1>
+            <p class="lead mb-4" style="font-size: 1.3rem; opacity: 0.95;">
+              CivicFix empowers residents to report issues like potholes, broken streetlights, and sanitation problems. Track progress and see real improvements in your neighborhood.
+            </p>
+            <div class="d-flex flex-wrap gap-3 justify-content-center mb-4">
+              <a class="btn btn-warning btn-lg text-dark hero-cta-btn" id="heroReportBtn" href="{% url 'login' %}">
+                <i class="fa-solid fa-plus-circle me-2"></i>
+                Report an Issue
+              </a>
+              <a class="btn btn-outline-light btn-lg hero-cta-btn" href="{% url 'login' %}">
+                <i class="fa-solid fa-map-location-dot me-2"></i>
+                View Public Map
+              </a>
+            </div>
+
+            <!-- Trust Indicators -->
+            <div class="trust-indicators mt-5">
+              <div class="row justify-content-center text-center">
+                <div class="col-md-3 col-6 mb-3">
+                  <div class="trust-item blue-glow-subtle">
+                    <i class="fa-regular fa-circle-check mb-2" style="font-size: 1.5rem; color: var(--accent-teal);"></i>
+                    <div class="small">No account required</div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                  <div class="trust-item blue-glow-subtle">
+                    <i class="fa-solid fa-shield-halved mb-2" style="font-size: 1.5rem; color: var(--accent-sky);"></i>
+                    <div class="small">Secure & Private</div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                  <div class="trust-item blue-glow-subtle">
+                    <i class="fa-solid fa-clock mb-2" style="font-size: 1.5rem; color: var(--accent-cyan);"></i>
+                    <div class="small">24/7 Tracking</div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                  <div class="trust-item blue-glow-subtle">
+                    <i class="fa-solid fa-mobile-screen-button mb-2" style="font-size: 1.5rem; color: var(--accent-blue-light);"></i>
+                    <div class="small">Mobile Friendly</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="stats-section py-5">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stat-card">
+            <div class="stat-icon mb-3"><i class="fas fa-flag"></i></div>
+            <div class="stat-number" data-target="1247">0</div>
+            <div class="stat-label">Issues Reported</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stat-card">
+            <div class="stat-icon mb-3"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-number" data-target="892">0</div>
+            <div class="stat-label">Issues Resolved</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stat-card">
+            <div class="stat-icon mb-3"><i class="fas fa-users"></i></div>
+            <div class="stat-number" data-target="3456">0</div>
+            <div class="stat-label">Active Citizens</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stat-card">
+            <div class="stat-icon mb-3"><i class="fas fa-city"></i></div>
+            <div class="stat-number" data-target="12">0</div>
+            <div class="stat-label">Cities Served</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="section-divider"></div>
+
+  <!-- How It Works Section -->
+  <section class="py-5 bg-light how-it-works-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="page-title mb-3">A Simple Process</h2>
+        <p class="lead text-muted mb-0">Report • Track • Resolve</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card h-100 how-card">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <div class="how-icon me-3 bg-warning-soft text-warning"><i class="fa-solid fa-bullhorn"></i></div>
+                <h5 class="mb-0">Report</h5>
+              </div>
+              <p class="mb-0 text-muted">Submit an issue with a title, category, and location. Add details to help authorities respond faster.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 how-card">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <div class="how-icon me-3 bg-info-soft text-info"><i class="fa-solid fa-location-crosshairs"></i></div>
+                <h5 class="mb-0">Track</h5>
+              </div>
+              <p class="mb-0 text-muted">Follow progress in real time. Get status updates and estimated resolution timelines.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 how-card">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <div class="how-icon me-3 bg-success-soft text-success"><i class="fa-solid fa-wrench"></i></div>
+                <h5 class="mb-0">Resolve</h5>
+              </div>
+              <p class="mb-0 text-muted">Authorities act and close the loop. See the impact of your report on the community.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="page-title mb-3">What Citizens Say</h2>
+        <p class="lead text-muted">Real stories from people making their communities better</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              <div class="stars mb-3">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">"CivicFix helped me report a dangerous pothole on my street. It was fixed within 3 days! Amazing response time."</p>
+              <div class="testimonial-author">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face" alt="Sarah Johnson" class="author-avatar">
+                <div class="author-info">
+                  <div class="author-name">Sarah Johnson</div>
+                  <div class="author-location">Downtown District</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              <div class="stars mb-3">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">"The tracking feature is fantastic. I could see exactly when my streetlight repair was scheduled and completed."</p>
+              <div class="testimonial-author">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=60&h=60&fit=crop&crop=face" alt="Miguel Sanchez" class="author-avatar">
+                <div class="author-info">
+                  <div class="author-name">Miguel Sanchez</div>
+                  <div class="author-location">Riverside</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              <div class="stars mb-3">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">"Reporting garbage overflow was quick and easy. The app makes civic participation simple for everyone."</p>
+              <div class="testimonial-author">
+                <img src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?w=60&h=60&fit=crop&crop=face" alt="Amina Patel" class="author-avatar">
+                <div class="author-info">
+                  <div class="author-name">Amina Patel</div>
+                  <div class="author-location">Uptown</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
