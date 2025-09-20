@@ -25,11 +25,11 @@ html, body {
 }
 
 .hero-section {
-  width: 100vw;
-  height: 100vh; /* still takes one full viewport height */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  min-height: 100vh; /* fallback for older browsers */
+  min-height: 100dvh; /* full device height incl. mobile UI */
+  display: grid; /* simpler centering */
+  place-items: center; /* center both horizontally and vertically */
   text-align: center;
   position: relative;
   overflow: hidden;

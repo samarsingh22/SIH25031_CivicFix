@@ -982,6 +982,17 @@ document.addEventListener('click', (e) => {
         markAllNotificationsAsRead();
         createSuccessParticles(e.target);
     }
+
+    // Open New Complaint modal (only intercept when it's not a link with href)
+    if (e.target.closest('.new-complaint-btn')) {
+        const link = e.target.closest('a');
+        if (link && link.getAttribute('href')) {
+            // Let the browser navigate to the complaints page
+        } else {
+            e.preventDefault();
+            openNewComplaintModal();
+        }
+    }
 });
 
 function filterNotifications(filter) {
@@ -1009,3 +1020,162 @@ window.addEventListener('resize', () => {
 
 // Add smooth scroll behavior
 document.documentElement.style.scrollBehavior = 'smooth';
+
+/* ==============================
+   New Complaint Modal + Submit
+   ============================== */
+function openNewComplaintModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Complaint</h2>
+                <button class="modal-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="newComplaintForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="complaintDescription">Description</label>
+                        <textarea id="complaintDescription" class="profile-input" rows="3" placeholder="Describe the issue..." required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="complaintLatitude">Latitude</label>
+                            <input type="number" step="0.000001" id="complaintLatitude" class="profile-input" placeholder="e.g. 12.971599" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="complaintLongitude">Longitude</label>
+                            <input type="number" step="0.000001" id="complaintLongitude" class="profile-input" placeholder="e.g. 77.594566" required>
+                        </div>
+                    </div>
+                    <div class="form-row" style="align-items:center; gap:1rem;">
+                        <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin:0;">
+                            <input type="checkbox" id="complaintIsSOS">
+                            <label for="complaintIsSOS" style="margin:0;">Mark as SOS</label>
+                        </div>
+                        <button type="button" class="btn-secondary" id="useLocationBtn">Use My Location</button>
+                    </div>
+                    <div class="profile-actions" style="margin-top:1rem;">
+                        <button type="button" class="btn-secondary" id="newComplaintCancel">Cancel</button>
+                        <button type="submit" class="action-btn" id="newComplaintSubmit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+
+    // Styling (reuse modal style used elsewhere)
+    modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center;
+        z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
+    `;
+    const modalContent = modal.querySelector('.modal-content');
+    modalContent.style.cssText = `
+        background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(20px); border-radius: 16px; padding: 2rem;
+        max-width: 640px; width: 92%; border: 1px solid rgba(51, 65, 85, 0.3); transform: scale(0.96); transition: transform 0.3s ease;
+    `;
+    const modalHeader = modal.querySelector('.modal-header');
+    modalHeader.style.cssText = `
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(51,65,85,0.3);
+    `;
+    const modalClose = modal.querySelector('.modal-close');
+    modalClose.style.cssText = `
+        background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.3s ease;
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => { modal.style.opacity = '1'; modalContent.style.transform = 'scale(1)'; }, 10);
+
+    function closeModal() {
+        modal.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.96)';
+        setTimeout(() => modal.remove(), 300);
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    const form = modal.querySelector('#newComplaintForm');
+    const submitBtn = modal.querySelector('#newComplaintSubmit');
+    const cancelBtn = modal.querySelector('#newComplaintCancel');
+    const useLocationBtn = modal.querySelector('#useLocationBtn');
+    const latInput = modal.querySelector('#complaintLatitude');
+    const lngInput = modal.querySelector('#complaintLongitude');
+
+    cancelBtn.addEventListener('click', closeModal);
+    useLocationBtn.addEventListener('click', () => tryUseGeolocation(latInput, lngInput));
+    form.addEventListener('submit', (e) => { e.preventDefault(); submitNewComplaint(form, submitBtn, closeModal); });
+}
+
+async function submitNewComplaint(form, submitBtn, onSuccessClose) {
+    const description = form.querySelector('#complaintDescription').value.trim();
+    const latitude = form.querySelector('#complaintLatitude').value;
+    const longitude = form.querySelector('#complaintLongitude').value;
+    const isSOS = form.querySelector('#complaintIsSOS').checked;
+
+    if (!description || latitude === '' || longitude === '') {
+        alert('Please fill description, latitude and longitude.');
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    try {
+        const res = await fetch('/api/complaints/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ description, latitude, longitude, is_sos: isSOS })
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.detail || 'Failed to submit complaint');
+        }
+        const data = await res.json();
+        // Success: animate, close, refresh complaints UI
+        try { createSuccessParticles(submitBtn); } catch {}
+        onSuccessClose && onSuccessClose();
+        try { switchSection('complaints'); } catch {}
+        try {
+            complaintsData.unshift({
+                id: data.id,
+                title: description.slice(0, 32) || 'Complaint',
+                location: `${latitude}, ${longitude}`,
+                status: 'pending',
+                date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+                category: 'maintenance',
+                description,
+                thumbnail: ''
+            });
+            const allGrid = document.getElementById('allComplaintsGrid');
+            if (allGrid) renderComplaintsToGrid(complaintsData, allGrid);
+        } catch {}
+    } catch (e) {
+        alert(e.message || 'Could not submit complaint.');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit';
+    }
+}
+
+function tryUseGeolocation(latInput, lngInput) {
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const { latitude, longitude } = pos.coords;
+            latInput.value = latitude.toFixed(6);
+            lngInput.value = longitude.toFixed(6);
+        },
+        () => alert('Unable to retrieve your location.'),
+        { enableHighAccuracy: true, timeout: 8000 }
+    );
+}
