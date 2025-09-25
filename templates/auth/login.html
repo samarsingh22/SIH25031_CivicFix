@@ -3,13 +3,14 @@
 {% block title %}Login - CivicFix{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/auth-dark.css' %}">
-<link rel="stylesheet" href="{% static 'css/auth-fixes.css' %}">
+<link rel="stylesheet" href="{% static 'css/auth-home-style.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 <div class="auth-container">
   <!-- Animated Background -->
+    
   <div class="auth-bg">
     <div class="floating-shapes">
       <div class="shape shape-1"></div>
@@ -88,5 +89,5 @@
   </div>
 </div>
 
-<script src="{% static 'js/auth-animations.js' %}"></script>
+<script src="{% static 'js/auth-home-animations.js' %}"></script>
 {% endblock %}

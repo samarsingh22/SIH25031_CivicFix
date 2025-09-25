@@ -564,6 +564,337 @@ function animateStats() {
     });
 }
 
+// Rewards Data
+const rewardsData = [
+    {
+        id: 1,
+        title: "Gift Voucher",
+        description: "Get ₹500 Amazon voucher for your efforts",
+        points: 1000,
+        icon: "🎁",
+        available: true
+    },
+    {
+        id: 2,
+        title: "Civic Champion Badge",
+        description: "Showcase your contribution with a digital badge",
+        points: 500,
+        icon: "🏅",
+        available: true
+    },
+    {
+        id: 3,
+        title: "CivicFix T-Shirt",
+        description: "Exclusive CivicFix branded T-shirt",
+        points: 2000,
+        icon: "👕",
+        available: true
+    },
+    {
+        id: 4,
+        title: "Coffee Voucher",
+        description: "Enjoy a free coffee at partner cafes",
+        points: 300,
+        icon: "☕",
+        available: true
+    },
+    {
+        id: 5,
+        title: "Movie Tickets",
+        description: "2 tickets to any local cinema",
+        points: 800,
+        icon: "🎬",
+        available: false
+    },
+    {
+        id: 6,
+        title: "Shopping Coupon",
+        description: "20% off at partner stores",
+        points: 600,
+        icon: "🛍",
+        available: true
+    }
+];
+
+const leaderboardData = [
+    { rank: 1, name: "Aditya", points: 3500, issues: 45 },
+    { rank: 2, name: "Samar", points: 2800, issues: 38 },
+    { rank: 3, name: "Ananya", points: 2500, issues: 32 },
+    { rank: 4, name: "Rahul", points: 1800, issues: 28 },
+    { rank: 5, name: "Priya", points: 1500, issues: 25 }
+];
+
+// User points (you can fetch this from your backend)
+let userPoints = 1200;
+
+// Load Rewards Content
+function loadRewardsContent() {
+    const container = document.getElementById('rewardsContainer');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="user-points-display fade-in">
+            <h3>Your Current Points</h3>
+            <div class="points-count">${userPoints}</div>
+            <p class="points-subtitle">Keep contributing to earn more rewards</p>
+            <div class="points-progress">
+                <div class="progress-label">
+                    <span>Next reward at 1500 points</span>
+                    <span>${userPoints}/1500</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${(userPoints / 1500) * 100}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>Available Rewards</h2>
+            <span class="filter-select">Sort by: Points</span>
+        </div>
+
+        <div class="rewards-grid" id="rewardsGrid"></div>
+
+        <div class="section-header">
+            <h2>Top Contributors</h2>
+        </div>
+
+        <div class="leaderboard-grid" id="leaderboardGrid"></div>
+    `;
+
+    renderRewards();
+    renderLeaderboard();
+}
+
+// Render Rewards
+function renderRewards() {
+    const grid = document.getElementById('rewardsGrid');
+    if (!grid) return;
+
+    grid.innerHTML = rewardsData.map((reward, index) => `
+        <div class="reward-card fade-in fade-in-delay-${Math.min(index + 1, 4)}" 
+             onclick="showRewardDetails(${reward.id})">
+            <div class="reward-header">
+                <div class="reward-icon">
+                    ${reward.icon}
+                </div>
+                <div class="reward-info">
+                    <h3>${reward.title}</h3>
+                    <p>${reward.description}</p>
+                </div>
+            </div>
+            <div class="reward-points">
+                <span class="points-badge">${reward.points} Points</span>
+                <button class="redeem-btn" 
+                        ${userPoints >= reward.points && reward.available ? '' : 'disabled'}
+                        onclick="event.stopPropagation(); redeemReward(${reward.id})">
+                    ${userPoints >= reward.points ? 'Redeem' : 'Need More Points'}
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Render Leaderboard
+function renderLeaderboard() {
+    const grid = document.getElementById('leaderboardGrid');
+    if (!grid) return;
+
+    grid.innerHTML = leaderboardData.map((user, index) => `
+        <div class="leaderboard-item fade-in fade-in-delay-${Math.min(index + 1, 4)}">
+            <div class="leaderboard-rank ${user.rank <= 3 ? `rank-${user.rank}` : 'rank-other'}">
+                ${user.rank <= 3 ? ['🥇', '🥈', '🥉'][user.rank - 1] : user.rank}
+            </div>
+            <div class="leaderboard-info">
+                <h4>${user.name}</h4>
+                <div class="leaderboard-points">
+                    <span>${user.points} points</span>
+                    <span>•</span>
+                    <span>${user.issues} issues resolved</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Show Reward Details
+function showRewardDetails(rewardId) {
+    const reward = rewardsData.find(r => r.id === rewardId);
+    if (!reward) return;
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>${reward.title}</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">${reward.icon}</div>
+                    <div class="points-badge" style="display: inline-block; font-size: 1.125rem;">
+                        ${reward.points} Points
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <strong>Description:</strong> ${reward.description}
+                </div>
+                
+                <div class="detail-row">
+                    <strong>Status:</strong> 
+                    <span style="color: ${reward.available ? '#10b981' : '#ef4444'}">
+                        ${reward.available ? 'Available' : 'Coming Soon'}
+                    </span>
+                </div>
+                
+                <div class="detail-row">
+                    <strong>Your Points:</strong> ${userPoints}
+                </div>
+                
+                ${reward.available ? `
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <button class="redeem-btn" 
+                            style="padding: 0.75rem 2rem; font-size: 1rem;"
+                            ${userPoints >= reward.points ? '' : 'disabled'}
+                            onclick="redeemReward(${reward.id})">
+                        ${userPoints >= reward.points ? 'Redeem Now' : 'Need ' + (reward.points - userPoints) + ' More Points'}
+                    </button>
+                </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    
+    // Add modal styles
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+
+    const modalContent = modal.querySelector('.modal-content');
+    modalContent.style.cssText = `
+        background: rgba(30, 41, 59, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        border: 1px solid rgba(51, 65, 85, 0.3);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    `;
+
+    // Animate in
+    setTimeout(() => {
+        modal.style.opacity = '1';
+        modalContent.style.transform = 'scale(1)';
+    }, 10);
+
+    // Close functionality
+    function closeModal() {
+        modal.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    }
+
+    modal.querySelector('.modal-close').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+}
+
+// Redeem Reward
+function redeemReward(rewardId) {
+    const reward = rewardsData.find(r => r.id === rewardId);
+    if (!reward || !reward.available) return;
+
+    if (userPoints >= reward.points) {
+        if (confirm(`Are you sure you want to redeem ${reward.title} for ${reward.points} points?`)) {
+            // Simulate API call
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Processing...';
+            button.disabled = true;
+
+            setTimeout(() => {
+                userPoints -= reward.points;
+                reward.available = false; // Mark as redeemed
+                
+                // Update UI
+                loadRewardsContent();
+                updateRewardsBadge();
+                
+                // Show success message
+                alert(`🎉 Congratulations! You've successfully redeemed ${reward.title}!`);
+                
+                // Add success animation (optional function)
+                if (typeof createSuccessParticles === 'function') {
+                    createSuccessParticles(button);
+                }
+            }, 1500);
+        }
+    } else {
+        alert(`You need ${reward.points - userPoints} more points to redeem this reward.`);
+    }
+}
+
+// Update Rewards Badge
+function updateRewardsBadge() {
+    const availableRewards = rewardsData.filter(r => r.available && userPoints >= r.points).length;
+    const badge = document.querySelector('.rewards-badge');
+    if (badge) {
+        badge.textContent = availableRewards;
+        
+        // Pulse animation when rewards are available
+        if (availableRewards > 0) {
+            badge.style.animation = 'rewardPulse 2s infinite';
+        } else {
+            badge.style.animation = 'none';
+        }
+    }
+}
+
+// Update the loadSectionContent function to include rewards
+function loadSectionContent(sectionName) {
+    switch (sectionName) {
+        case 'dashboard':
+            loadDashboardContent();
+            break;
+        case 'complaints':
+            loadComplaintsContent();
+            break;
+        case 'track':
+            loadTrackingContent();
+            break;
+        case 'rewards':  // Add this case
+            loadRewardsContent();
+            break;
+        case 'notifications':
+            loadNotificationsContent();
+            break;
+        case 'profile':
+            loadProfileContent();
+            break;
+    }
+}
+
+
 // Notification Management
 function markNotificationAsRead(notification) {
     notification.classList.remove('unread');
@@ -1179,3 +1510,569 @@ function tryUseGeolocation(latInput, lngInput) {
         { enableHighAccuracy: true, timeout: 8000 }
     );
 }
+// Enhanced Rewards Functionality for the New Rewards Section
+
+// Reward redemption function for the enhanced rewards section
+function redeemReward(rewardId) {
+    // Show confirmation dialog with enhanced styling
+    const confirmModal = document.createElement('div');
+    confirmModal.className = 'modal-overlay';
+    confirmModal.innerHTML = `
+        <div class="modal-content reward-confirm-modal">
+            <div class="modal-header">
+                <div class="reward-confirm-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h2>Confirm Redemption</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to redeem this reward?</p>
+                <div class="reward-confirm-details">
+                    <div class="points-cost-display">Points Required: <span class="points-highlight">200</span></div>
+                    <div class="points-remaining">Points After: <span class="points-highlight">250</span></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary cancel-redeem">Cancel</button>
+                <button class="action-btn confirm-redeem">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z" fill="currentColor"/>
+                    </svg>
+                    Redeem Now
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Add modal styles
+    confirmModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+
+    const modalContent = confirmModal.querySelector('.modal-content');
+    modalContent.style.cssText = `
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+        color: var(--charcoal-gray);
+    `;
+
+    document.body.appendChild(confirmModal);
+
+    // Animate in
+    setTimeout(() => {
+        confirmModal.style.opacity = '1';
+        modalContent.style.transform = 'scale(1)';
+    }, 10);
+
+    // Close functionality
+    function closeConfirmModal() {
+        confirmModal.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            confirmModal.remove();
+        }, 300);
+    }
+
+    // Event listeners
+    confirmModal.querySelector('.modal-close').addEventListener('click', closeConfirmModal);
+    confirmModal.querySelector('.cancel-redeem').addEventListener('click', closeConfirmModal);
+    confirmModal.addEventListener('click', (e) => {
+        if (e.target === confirmModal) closeConfirmModal();
+    });
+
+    // Confirm redemption
+    confirmModal.querySelector('.confirm-redeem').addEventListener('click', () => {
+        processRewardRedemption(rewardId);
+        closeConfirmModal();
+    });
+}
+
+// Process the actual reward redemption
+function processRewardRedemption(rewardId) {
+    // Show processing animation
+    const processingModal = document.createElement('div');
+    processingModal.className = 'modal-overlay';
+    processingModal.innerHTML = `
+        <div class="modal-content processing-modal">
+            <div class="processing-animation">
+                <div class="reward-processing-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h3>Processing Redemption...</h3>
+                <div class="processing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Add processing modal styles
+    processingModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2001;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+
+    const processingContent = processingModal.querySelector('.modal-content');
+    processingContent.style.cssText = `
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 102, 0, 0.1));
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        color: white;
+    `;
+
+    document.body.appendChild(processingModal);
+
+    // Animate in
+    setTimeout(() => {
+        processingModal.style.opacity = '1';
+    }, 10);
+
+    // Simulate API call and show success
+    setTimeout(() => {
+        processingModal.remove();
+        showRedemptionSuccess(rewardId);
+        
+        // Update the rewards section to reflect the redemption
+        updateRewardsAfterRedemption(rewardId);
+    }, 2000);
+}
+
+// Show redemption success animation
+function showRedemptionSuccess(rewardId) {
+    const successModal = document.createElement('div');
+    successModal.className = 'modal-overlay';
+    successModal.innerHTML = `
+        <div class="modal-content success-modal">
+            <div class="success-animation">
+                <div class="success-checkmark">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h2>🎉 Redemption Successful!</h2>
+                <p>Your reward has been successfully redeemed. You'll receive further instructions via email.</p>
+                <button class="action-btn success-close">
+                    <span>Awesome!</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Add success modal styles
+    successModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2001;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+
+    const successContent = successModal.querySelector('.modal-content');
+    successContent.style.cssText = `
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(34, 197, 94, 0.95));
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        border: 2px solid rgba(16, 185, 129, 0.5);
+        color: white;
+        max-width: 400px;
+        width: 90%;
+        transform: scale(0.8);
+        transition: transform 0.3s ease;
+    `;
+
+    document.body.appendChild(successModal);
+
+    // Animate in
+    setTimeout(() => {
+        successModal.style.opacity = '1';
+        successContent.style.transform = 'scale(1)';
+    }, 10);
+
+    // Create celebration particles
+    createCelebrationParticles();
+
+    // Close functionality
+    function closeSuccessModal() {
+        successModal.style.opacity = '0';
+        successContent.style.transform = 'scale(0.8)';
+        setTimeout(() => {
+            successModal.remove();
+        }, 300);
+    }
+
+    successModal.querySelector('.success-close').addEventListener('click', closeSuccessModal);
+    successModal.addEventListener('click', (e) => {
+        if (e.target === successModal) closeSuccessModal();
+    });
+
+    // Auto close after 5 seconds
+    setTimeout(closeSuccessModal, 5000);
+}
+
+// Create celebration particles effect
+function createCelebrationParticles() {
+    const colors = ['#ffd700', '#ff6b00', '#10b981', '#3b82f6', '#8b5cf6'];
+    
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2002;
+            left: 50%;
+            top: 50%;
+        `;
+        
+        document.body.appendChild(particle);
+        
+        const angle = (Math.PI * 2 * i) / 50;
+        const velocity = 100 + Math.random() * 100;
+        const gravity = 0.5;
+        
+        particle.animate([
+            { 
+                transform: 'translate(-50%, -50%) scale(0)', 
+                opacity: 1 
+            },
+            { 
+                transform: `translate(${Math.cos(angle) * velocity - 50}px, ${Math.sin(angle) * velocity - 50}px) scale(1)`, 
+                opacity: 1 
+            },
+            { 
+                transform: `translate(${Math.cos(angle) * velocity * 1.5 - 50}px, ${Math.sin(angle) * velocity * 1.5 + 200 - 50}px) scale(0)`, 
+                opacity: 0 
+            }
+        ], {
+            duration: 2000 + Math.random() * 1000,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            delay: Math.random() * 200
+        }).onfinish = () => {
+            particle.remove();
+        };
+    }
+}
+
+// Update rewards section after redemption
+function updateRewardsAfterRedemption(rewardId) {
+    // Update points display
+    const pointsValue = document.querySelector('.points-value');
+    if (pointsValue) {
+        const currentPoints = parseInt(pointsValue.textContent.replace(/,/g, ''));
+        const newPoints = currentPoints - 200; // Assuming 200 points were redeemed
+        pointsValue.textContent = newPoints.toLocaleString();
+        
+        // Animate the points change
+        pointsValue.style.transform = 'scale(1.2)';
+        pointsValue.style.color = '#ef4444';
+        setTimeout(() => {
+            pointsValue.style.transform = 'scale(1)';
+            pointsValue.style.color = '';
+        }, 300);
+    }
+
+    // Update available balance in stats
+    const availableBalance = document.querySelector('.reward-stat-card.available .stat-value-reward');
+    if (availableBalance) {
+        const currentBalance = parseInt(availableBalance.textContent);
+        const newBalance = currentBalance - 200;
+        availableBalance.textContent = newBalance;
+        
+        // Animate the balance change
+        availableBalance.style.transform = 'scale(1.1)';
+        availableBalance.style.color = '#ef4444';
+        setTimeout(() => {
+            availableBalance.style.transform = 'scale(1)';
+            availableBalance.style.color = '';
+        }, 300);
+    }
+
+    // Update redeemed points in stats
+    const redeemedPoints = document.querySelector('.reward-stat-card.redeemed .stat-value-reward');
+    if (redeemedPoints) {
+        const currentRedeemed = parseInt(redeemedPoints.textContent);
+        const newRedeemed = currentRedeemed + 200;
+        redeemedPoints.textContent = newRedeemed;
+        
+        // Animate the redeemed change
+        redeemedPoints.style.transform = 'scale(1.1)';
+        redeemedPoints.style.color = '#10b981';
+        setTimeout(() => {
+            redeemedPoints.style.transform = 'scale(1)';
+            redeemedPoints.style.color = '';
+        }, 300);
+    }
+
+    // Add a new activity item to the timeline
+    const activityTimeline = document.querySelector('.activity-timeline');
+    if (activityTimeline) {
+        const newActivity = document.createElement('div');
+        newActivity.className = 'activity-item redeemed';
+        newActivity.innerHTML = `
+            <div class="activity-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="activity-content">
+                <h5>Reward Redeemed</h5>
+                <p>Successfully redeemed reward</p>
+                <span class="activity-time">Just now</span>
+            </div>
+            <div class="activity-points redeemed">-200</div>
+        `;
+        
+        // Insert at the beginning
+        activityTimeline.insertBefore(newActivity, activityTimeline.firstChild);
+        
+        // Animate the new activity
+        newActivity.style.opacity = '0';
+        newActivity.style.transform = 'translateX(-20px)';
+        setTimeout(() => {
+            newActivity.style.transition = 'all 0.4s ease';
+            newActivity.style.opacity = '1';
+            newActivity.style.transform = 'translateX(0)';
+        }, 100);
+    }
+}
+
+// Enhanced rewards filter functionality
+function filterRewards(category) {
+    const rewardCards = document.querySelectorAll('.reward-card');
+    
+    rewardCards.forEach(card => {
+        const cardCategory = card.dataset.category;
+        const shouldShow = category === 'all' || cardCategory === category;
+        
+        if (shouldShow) {
+            card.style.display = 'flex';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        } else {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                card.style.display = 'none';
+            }, 200);
+        }
+    });
+    
+    // Update filter select appearance
+    const filterSelect = document.getElementById('rewardsFilter');
+    if (filterSelect) {
+        filterSelect.style.transform = 'scale(1.05)';
+        setTimeout(() => {
+            filterSelect.style.transform = 'scale(1)';
+        }, 150);
+    }
+}
+
+// Add event listener for rewards filter
+document.addEventListener('change', (e) => {
+    if (e.target.id === 'rewardsFilter') {
+        filterRewards(e.target.value);
+    }
+});
+
+// Enhanced achievement unlock animation
+function unlockAchievement(achievementId) {
+    const achievementCard = document.querySelector(`[data-achievement-id="${achievementId}"]`);
+    if (!achievementCard) return;
+    
+    // Add unlock animation
+    achievementCard.classList.remove('locked');
+    achievementCard.classList.add('unlocked');
+    
+    // Create unlock effect
+    const unlockEffect = document.createElement('div');
+    unlockEffect.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+        border-radius: 16px;
+        pointer-events: none;
+        z-index: 1;
+    `;
+    
+    achievementCard.style.position = 'relative';
+    achievementCard.appendChild(unlockEffect);
+    
+    // Animate the unlock effect
+    unlockEffect.animate([
+        { transform: 'translateX(-100%)', opacity: 0 },
+        { transform: 'translateX(0%)', opacity: 1 },
+        { transform: 'translateX(100%)', opacity: 0 }
+    ], {
+        duration: 800,
+        easing: 'ease-out'
+    }).onfinish = () => {
+        unlockEffect.remove();
+    };
+    
+    // Show achievement unlock notification
+    showAchievementNotification(achievementId);
+}
+
+// Show achievement unlock notification
+function showAchievementNotification(achievementId) {
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.innerHTML = `
+        <div class="achievement-notification-content">
+            <div class="achievement-notification-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="achievement-notification-text">
+                <h4>Achievement Unlocked!</h4>
+                <p>You've earned a new achievement</p>
+            </div>
+        </div>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.95), rgba(255, 102, 0, 0.95));
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        z-index: 2000;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 4000);
+    
+    // Click to dismiss
+    notification.addEventListener('click', () => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    });
+}
+
+// Initialize enhanced rewards functionality
+function initEnhancedRewards() {
+    // Add hover effects to reward cards
+    document.addEventListener('mouseover', (e) => {
+        if (e.target.closest('.reward-card')) {
+            const card = e.target.closest('.reward-card');
+            const icon = card.querySelector('.reward-icon-large');
+            if (icon) {
+                icon.style.transform = 'scale(1.1) rotate(5deg)';
+            }
+        }
+        
+        if (e.target.closest('.achievement-card')) {
+            const card = e.target.closest('.achievement-card');
+            const icon = card.querySelector('.achievement-icon');
+            if (icon) {
+                icon.style.transform = 'scale(1.1) rotate(5deg)';
+            }
+        }
+    });
+    
+    document.addEventListener('mouseout', (e) => {
+        if (e.target.closest('.reward-card')) {
+            const card = e.target.closest('.reward-card');
+            const icon = card.querySelector('.reward-icon-large');
+            if (icon) {
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            }
+        }
+        
+        if (e.target.closest('.achievement-card')) {
+            const card = e.target.closest('.achievement-card');
+            const icon = card.querySelector('.achievement-icon');
+            if (icon) {
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            }
+        }
+    });
+}
+
+// Add to the existing initialization
+document.addEventListener('DOMContentLoaded', () => {
+    initEnhancedRewards();
+});
+
+// Export functions for global access
+window.redeemReward = redeemReward;
+window.filterRewards = filterRewards;
+window.unlockAchievement = unlockAchievement;

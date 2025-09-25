@@ -3,18 +3,19 @@
 {% block title %}Citizen Dashboard - CivicFix{% endblock %}
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/citizen.css' %}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 {% endblock %}
 {% block content %}
 
-
-    <!-- Background Animation -->
-    <div class="background-animation">
-        <div class="floating-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-            <div class="shape shape-4"></div>
+    <!-- Enhanced Animated Background -->
+    <div class="animated-bg">
+        <div class="bg-shapes">
+            <div class="shape-1"></div>
+            <div class="shape-2"></div>
+            <div class="shape-3"></div>
+            <div class="shape-4"></div>
+            <div class="shape-5"></div>
+            <div class="shape-6"></div>
         </div>
     </div>
 
@@ -27,11 +28,6 @@
                 </svg>
                 <span class="logo-text">CivicFix</span>
             </div>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </button>
         </div>
         
         <nav class="sidebar-nav">
@@ -60,13 +56,24 @@
                         <span>Track Status</span>
                     </a>
                 </li>
+                <!-- Add Rewards Navigation Item -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="rewards">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 6H17.82C17.93 5.69 18 5.35 18 5C18 3.34 16.66 2 15 2C13.95 2 13.04 2.54 12.5 3.35L12 4.02L11.5 3.34C10.96 2.54 10.05 2 9 2C7.34 2 6 3.34 6 5C6 5.35 6.07 5.69 6.18 6H4C2.89 6 2.01 6.89 2.01 8L2 19C2 20.11 2.89 21 4 21H20C21.11 21 22 20.11 22 19V8C22 6.89 21.11 6 20 6ZM15 4C15.55 4 16 4.45 16 5C16 5.55 15.55 6 15 6C14.45 6 14 5.55 14 5C14 4.45 14.45 4 15 4ZM9 4C9.55 4 10 4.45 10 5C10 5.55 9.55 6 9 6C8.45 6 8 5.55 8 5C8 4.45 8.45 4 9 4ZM20 19H4V8H6.08C6.58 9.66 8.15 11 10 11H14C15.85 11 17.42 9.66 17.92 8H20V19Z" fill="currentColor"/>
+                        </svg>
+                        <span>Rewards</span>
+                        <!-- Reward Notification Badge -->
+                        <span class="notification-badge rewards-badge">3</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-section="notifications">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.89 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5S10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="currentColor"/>
                         </svg>
                         <span>Notifications</span>
-                        <span class="notification-badge">3</span>
+                        <span class="notification-badge">2</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -105,7 +112,7 @@
                         </svg>
                     </div>
                     <div class="welcome-text">
-                      <h1 class="display-6 mb-2">Hello, {{ request.user.first_name|default:request.user.username }}</h1>
+                      <h1>Hello, {{ request.user.first_name|default:request.user.username }}</h1>
                         <p>Welcome back to your CivicFix dashboard</p>
                     </div>
                 </div>
@@ -126,69 +133,128 @@
             <section class="content-section active" id="dashboard-section">
                 <!-- Stats Cards -->
                 <div class="stats-section">
-                    <div class="stats-grid">
-                        <div class="stat-card total">
-                            <div class="stat-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM17 12H7V10H17V12ZM17 16H7V14H17V16ZM17 8H7V6H17V8Z" fill="currentColor"/>
-                                </svg>
+                    <div class="stats-header">
+                        <h2>Dashboard Analytics</h2>
+                        <p>Monitor your complaint status and progress metrics</p>
+                    </div>
+                    <div class="stats-grid-professional">
+                        <div class="stat-card-pro total">
+                            <div class="stat-card-header">
+                                <div class="stat-icon-pro">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 11H15M9 15H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L19.7071 9.70711C19.8946 9.89464 20 10.149 20 10.4142V19C20 20.1046 19.1046 21 18 21H17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="stat-badge-pro">TOTAL</div>
                             </div>
-                            <div class="stat-content">
-                                <h3>Total Complaints</h3>
-                                <div class="stat-number">15</div>
-                                <div class="stat-trend">+2 this month</div>
-                            </div>
-                        </div>
-
-                        <div class="stat-card pending">
-                            <div class="stat-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
-                                </svg>
-                            </div>
-                            <div class="stat-content">
-                                <h3>Pending</h3>
-                                <div class="stat-number">6</div>
-                                <div class="stat-trend">Awaiting review</div>
+                            <div class="stat-body-pro">
+                                <div class="stat-value-pro">15</div>
+                                <div class="stat-title-pro">Total Complaints</div>
+                                <div class="stat-change-pro positive">
+                                    <span class="change-indicator">↗</span>
+                                    <span>+2 this month</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="stat-card progress">
-                            <div class="stat-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="currentColor"/>
-                                </svg>
+                        <div class="stat-card-pro pending">
+                            <div class="stat-card-header">
+                                <div class="stat-icon-pro">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="stat-badge-pro">PENDING</div>
                             </div>
-                            <div class="stat-content">
-                                <h3>In Progress</h3>
-                                <div class="stat-number">2</div>
-                                <div class="stat-trend">Being addressed</div>
+                            <div class="stat-body-pro">
+                                <div class="stat-value-pro">6</div>
+                                <div class="stat-title-pro">Pending Review</div>
+                                <div class="stat-change-pro neutral">
+                                    <span class="change-indicator">⏳</span>
+                                    <span>Awaiting review</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="stat-card resolved">
-                            <div class="stat-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/>
-                                </svg>
+                        <div class="stat-card-pro progress">
+                            <div class="stat-card-header">
+                                <div class="stat-icon-pro">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M8 12L10 14L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="stat-badge-pro">IN PROGRESS</div>
                             </div>
-                            <div class="stat-content">
-                                <h3>Resolved</h3>
-                                <div class="stat-number">7</div>
-                                <div class="stat-trend">Successfully fixed</div>
+                            <div class="stat-body-pro">
+                                <div class="stat-value-pro">2</div>
+                                <div class="stat-title-pro">In Progress</div>
+                                <div class="stat-change-pro positive">
+                                    <span class="change-indicator">⚡</span>
+                                    <span>Being addressed</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card-pro resolved">
+                            <div class="stat-card-header">
+                                <div class="stat-icon-pro">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                </div>
+                                <div class="stat-badge-pro">DONE</div>
+                            </div>
+                            <div class="stat-body-pro">
+                                <div class="stat-value-pro">7</div>
+                                <div class="stat-title-pro">Resolved</div>
+                                <div class="stat-change-pro positive">
+                                    <span class="change-indicator">✓</span>
+                                    <span>Successfully fixed</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Recent Complaints Preview -->
-                <div class="complaints-section">
-                    <div class="section-header">
-                        <h2>Recent Complaints</h2>
-                        <button class="view-all-btn" onclick="switchSection('complaints')">View All</button>
+                <div class="complaints-section-new">
+                    <div class="section-header-new">
+                        <div class="header-content-new">
+                            <div class="header-icon-new">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 11H15M9 15H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L19.7071 9.70711C19.8946 9.89464 20 10.149 20 10.4142V19C20 20.1046 19.1046 21 18 21H17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="header-text-new">
+                                <h3>Recent Complaints</h3>
+                                <p>Your latest submitted issues</p>
+                            </div>
+                        </div>
+                        <button class="view-all-btn-new" onclick="switchSection('complaints')">
+                            <span>View All</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
-                    <div class="complaints-grid" id="recentComplaintsGrid">
-                        <!-- Recent complaints will be populated by JavaScript -->
+                    <div class="complaints-content-new">
+                        <div class="complaints-grid-new" id="recentComplaintsGrid">
+                            <!-- Recent complaints will be populated by JavaScript -->
+                            <div class="empty-state-new">
+                                <div class="empty-icon-new">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 11H15M9 15H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L19.7071 9.70711C19.8946 9.89464 20 10.149 20 10.4142V19C20 20.1046 19.1046 21 18 21H17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h4>No Recent Complaints</h4>
+                                <p>You haven't submitted any complaints recently</p>
+                                <a href="{% url 'complaints_page_api' %}" class="empty-action-new">Submit Your First Complaint</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -211,30 +277,7 @@
                     <p>Manage and track all your submitted complaints</p>
                 </div>
                 
-                <div class="filter-bar">
-                    <div class="filter-controls">
-                        <select class="filter-select" id="statusFilter">
-                            <option value="all">All Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="progress">In Progress</option>
-                            <option value="resolved">Resolved</option>
-                        </select>
-                        <select class="filter-select" id="categoryFilter">
-                            <option value="all">All Categories</option>
-                            <option value="roads">Roads</option>
-                            <option value="lights">Street Lights</option>
-                            <option value="garbage">Garbage</option>
-                            <option value="water">Water</option>
-                            <option value="maintenance">Maintenance</option>
-                        </select>
-                        <a href="{% url 'complaints_page_api' %}" class="action-btn new-complaint-btn">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor"/>
-                            </svg>
-                            New Complaint
-                        </a>
-                    </div>
-                </div>
+
                 
                 <div class="complaints-grid" id="allComplaintsGrid">
                     <!-- All complaints will be populated by JavaScript -->
@@ -253,6 +296,379 @@
                 </div>
             </section>
 
+            <!-- Enhanced Rewards Section -->
+            <section id="rewards-section" class="content-section">
+                <!-- Rewards Header -->
+                <div class="rewards-header-enhanced">
+                    <div class="header-content-enhanced">
+                        <div class="header-icon-enhanced rewards-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div class="header-text-enhanced">
+                            <h1>Rewards & Recognition</h1>
+                            <p>Earn points for making your city better. Redeem exciting rewards and unlock achievements!</p>
+                        </div>
+                    </div>
+                    <div class="rewards-summary">
+                        <div class="points-display">
+                            <span class="points-value">1,250</span>
+                            <span class="points-label">Total Points</span>
+                        </div>
+                        <div class="level-display">
+                            <span class="level-badge">Level 3</span>
+                            <span class="level-label">Civic Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Points Overview Cards -->
+                <div class="rewards-stats-grid">
+                    <div class="reward-stat-card earned">
+                        <div class="stat-icon-reward">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content-reward">
+                            <h3>Points Earned</h3>
+                            <div class="stat-value-reward">1,250</div>
+                            <div class="stat-change-reward positive">
+                                <span>+150 this month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reward-stat-card redeemed">
+                        <div class="stat-icon-reward">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content-reward">
+                            <h3>Points Redeemed</h3>
+                            <div class="stat-value-reward">800</div>
+                            <div class="stat-change-reward neutral">
+                                <span>3 rewards claimed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reward-stat-card available">
+                        <div class="stat-icon-reward">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content-reward">
+                            <h3>Available Balance</h3>
+                            <div class="stat-value-reward">450</div>
+                            <div class="stat-change-reward positive">
+                                <span>Ready to redeem</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reward-stat-card achievements">
+                        <div class="stat-icon-reward">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content-reward">
+                            <h3>Achievements</h3>
+                            <div class="stat-value-reward">7</div>
+                            <div class="stat-change-reward positive">
+                                <span>2 new unlocked</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Rewards Section -->
+                <div class="rewards-section-enhanced">
+                    <div class="section-header-new">
+                        <div class="header-content-new">
+                            <div class="header-icon-new">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6H17.82C17.93 5.69 18 5.35 18 5C18 3.34 16.66 2 15 2C13.95 2 13.04 2.54 12.5 3.35L12 4.02L11.5 3.34C10.96 2.54 10.05 2 9 2C7.34 2 6 3.34 6 5C6 5.35 6.07 5.69 6.18 6H4C2.89 6 2.01 6.89 2.01 8L2 19C2 20.11 2.89 21 4 21H20C21.11 21 22 20.11 22 19V8C22 6.89 21.11 6 20 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="header-text-new">
+                                <h3>Available Rewards</h3>
+                                <p>Redeem your points for exciting rewards</p>
+                            </div>
+                        </div>
+                        <div class="rewards-filter">
+                            <select class="filter-select" id="rewardsFilter">
+                                <option value="all">All Rewards</option>
+                                <option value="vouchers">Vouchers</option>
+                                <option value="merchandise">Merchandise</option>
+                                <option value="experiences">Experiences</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="rewards-grid" id="rewardsGrid">
+                        <!-- Sample Reward Cards -->
+                        <div class="reward-card" data-category="vouchers">
+                            <div class="reward-image">
+                                <div class="reward-icon-large">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="2"/>
+                                        <polyline points="3.27,6.96 12,12.01 20.73,6.96" stroke="currentColor" stroke-width="2"/>
+                                        <line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                </div>
+                                <div class="reward-badge">Popular</div>
+                            </div>
+                            <div class="reward-content">
+                                <h4>₹100 Shopping Voucher</h4>
+                                <p>Redeem at participating local stores</p>
+                                <div class="reward-points">
+                                    <span class="points-cost">200 Points</span>
+                                    <span class="points-available">Available</span>
+                                </div>
+                            </div>
+                            <button class="redeem-btn" onclick="redeemReward('voucher-100')">
+                                <span>Redeem Now</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="reward-card" data-category="merchandise">
+                            <div class="reward-image">
+                                <div class="reward-icon-large">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="reward-content">
+                                <h4>CivicFix T-Shirt</h4>
+                                <p>Premium quality civic champion merchandise</p>
+                                <div class="reward-points">
+                                    <span class="points-cost">350 Points</span>
+                                    <span class="points-available">Available</span>
+                                </div>
+                            </div>
+                            <button class="redeem-btn" onclick="redeemReward('tshirt')">
+                                <span>Redeem Now</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="reward-card" data-category="experiences">
+                            <div class="reward-image">
+                                <div class="reward-icon-large">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 9L12 2L21 9V20A2 2 0 0 1 19 22H5A2 2 0 0 1 3 20V9Z" stroke="currentColor" stroke-width="2"/>
+                                        <polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                </div>
+                                <div class="reward-badge limited">Limited</div>
+                            </div>
+                            <div class="reward-content">
+                                <h4>City Hall Tour</h4>
+                                <p>Exclusive behind-the-scenes city hall experience</p>
+                                <div class="reward-points">
+                                    <span class="points-cost">500 Points</span>
+                                    <span class="points-insufficient">Need 50 more</span>
+                                </div>
+                            </div>
+                            <button class="redeem-btn disabled" disabled>
+                                <span>Insufficient Points</span>
+                            </button>
+                        </div>
+
+                        <div class="reward-card" data-category="vouchers">
+                            <div class="reward-image">
+                                <div class="reward-icon-large">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                        <line x1="9" y1="9" x2="9.01" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                        <line x1="15" y1="9" x2="15.01" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="reward-content">
+                                <h4>₹50 Food Voucher</h4>
+                                <p>Valid at local restaurants and cafes</p>
+                                <div class="reward-points">
+                                    <span class="points-cost">100 Points</span>
+                                    <span class="points-available">Available</span>
+                                </div>
+                            </div>
+                            <button class="redeem-btn" onclick="redeemReward('food-50')">
+                                <span>Redeem Now</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements Section -->
+                <div class="achievements-section-enhanced">
+                    <div class="section-header-new">
+                        <div class="header-content-new">
+                            <div class="header-icon-new">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="header-text-new">
+                                <h3>Your Achievements</h3>
+                                <p>Milestones you've unlocked as a civic champion</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievements-grid">
+                        <div class="achievement-card unlocked">
+                            <div class="achievement-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <div class="achievement-content">
+                                <h4>First Complaint</h4>
+                                <p>Submitted your first civic complaint</p>
+                                <span class="achievement-points">+50 Points</span>
+                            </div>
+                            <div class="achievement-status unlocked-badge">Unlocked</div>
+                        </div>
+
+                        <div class="achievement-card unlocked">
+                            <div class="achievement-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="achievement-content">
+                                <h4>Problem Solver</h4>
+                                <p>Had 5 complaints successfully resolved</p>
+                                <span class="achievement-points">+100 Points</span>
+                            </div>
+                            <div class="achievement-status unlocked-badge">Unlocked</div>
+                        </div>
+
+                        <div class="achievement-card locked">
+                            <div class="achievement-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="achievement-content">
+                                <h4>Community Champion</h4>
+                                <p>Submit 20 complaints (Progress: 15/20)</p>
+                                <span class="achievement-points">+200 Points</span>
+                            </div>
+                            <div class="achievement-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                                <span class="progress-text">75%</span>
+                            </div>
+                        </div>
+
+                        <div class="achievement-card locked">
+                            <div class="achievement-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="achievement-content">
+                                <h4>Civic Legend</h4>
+                                <p>Reach 2000 total points</p>
+                                <span class="achievement-points">+500 Points</span>
+                            </div>
+                            <div class="achievement-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 62%"></div>
+                                </div>
+                                <span class="progress-text">62%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="rewards-activity-section">
+                    <div class="section-header-new">
+                        <div class="header-content-new">
+                            <div class="header-icon-new">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="header-text-new">
+                                <h3>Recent Activity</h3>
+                                <p>Your latest points and rewards activity</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="activity-timeline">
+                        <div class="activity-item earned">
+                            <div class="activity-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <h5>Earned 50 Points</h5>
+                                <p>Complaint #CMP-2024-001 was resolved</p>
+                                <span class="activity-time">2 hours ago</span>
+                            </div>
+                            <div class="activity-points earned">+50</div>
+                        </div>
+
+                        <div class="activity-item redeemed">
+                            <div class="activity-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <h5>Redeemed Reward</h5>
+                                <p>₹50 Food Voucher claimed successfully</p>
+                                <span class="activity-time">1 day ago</span>
+                            </div>
+                            <div class="activity-points redeemed">-100</div>
+                        </div>
+
+                        <div class="activity-item earned">
+                            <div class="activity-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <h5>Achievement Unlocked</h5>
+                                <p>"Problem Solver" achievement earned</p>
+                                <span class="activity-time">3 days ago</span>
+                            </div>
+                            <div class="activity-points earned">+100</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Notifications Section -->
             <section class="content-section" id="notifications-section">
                 <div class="section-title">
@@ -260,17 +676,178 @@
                     <p>Stay updated on your complaint status changes</p>
                 </div>
                 
-                <div class="notifications-controls">
-                    <button class="mark-all-read" id="markAllRead">Mark all as read</button>
-                    <div class="notification-filters">
-                        <button class="filter-btn active" data-filter="all">All</button>
-                        <button class="filter-btn" data-filter="unread">Unread</button>
-                        <button class="filter-btn" data-filter="updates">Updates</button>
+                <div class="notifications-section-enhanced">
+                    <div class="notifications-header-enhanced">
+                        <div class="header-content-enhanced">
+                            <div class="header-icon-enhanced">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="header-text-enhanced">
+                                <h3>All Notifications</h3>
+                                <p>Stay informed about your complaint updates</p>
+                            </div>
+                        </div>
+                        <div class="notifications-controls-enhanced">
+                            <button class="mark-all-read-enhanced" id="markAllRead">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Mark all as read
+                            </button>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="notifications-list detailed" id="detailedNotificationsList">
-                    <!-- Detailed notifications will be populated by JavaScript -->
+                    
+                    <div class="notification-filters-enhanced">
+                        <button class="filter-btn-enhanced active" data-filter="all">
+                            <span class="filter-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            All
+                            <span class="filter-count">12</span>
+                        </button>
+                        <button class="filter-btn-enhanced" data-filter="unread">
+                            <span class="filter-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                                </svg>
+                            </span>
+                            Unread
+                            <span class="filter-count">2</span>
+                        </button>
+                        <button class="filter-btn-enhanced" data-filter="updates">
+                            <span class="filter-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.66 0 3.2.45 4.53 1.24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M21 3l-6 6-2-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            Updates
+                            <span class="filter-count">7</span>
+                        </button>
+                    </div>
+                    
+                    <div class="notifications-content-enhanced">
+                        <div class="notifications-list-enhanced" id="detailedNotificationsList">
+                            <!-- Sample notifications for demonstration -->
+                            <div class="notification-card-enhanced unread" data-type="update">
+                                <div class="notification-indicator"></div>
+                                <div class="notification-icon-enhanced status-update">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.66 0 3.2.45 4.53 1.24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M21 3l-6 6-2-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="notification-content-enhanced">
+                                    <div class="notification-header-card">
+                                        <h4>Complaint Status Updated</h4>
+                                        <span class="notification-time-enhanced">2 hours ago</span>
+                                    </div>
+                                    <p class="notification-message">Your complaint #CMP-2024-001 about "Broken Street Light" has been updated to <strong>In Progress</strong>. Our team is working on it.</p>
+                                    <div class="notification-meta">
+                                        <span class="complaint-id">#CMP-2024-001</span>
+                                        <span class="status-badge progress">In Progress</span>
+                                    </div>
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="action-btn-small view-complaint" title="View Complaint">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/>
+                                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                    <button class="action-btn-small mark-read" title="Mark as Read">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="notification-card-enhanced" data-type="update">
+                                <div class="notification-indicator"></div>
+                                <div class="notification-icon-enhanced resolved">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M22 4L12 14.01l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="notification-content-enhanced">
+                                    <div class="notification-header-card">
+                                        <h4>Complaint Resolved</h4>
+                                        <span class="notification-time-enhanced">1 day ago</span>
+                                    </div>
+                                    <p class="notification-message">Great news! Your complaint #CMP-2024-002 about "Pothole on Main Street" has been successfully resolved.</p>
+                                    <div class="notification-meta">
+                                        <span class="complaint-id">#CMP-2024-002</span>
+                                        <span class="status-badge resolved">Resolved</span>
+                                    </div>
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="action-btn-small view-complaint" title="View Complaint">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/>
+                                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="notification-card-enhanced unread" data-type="update">
+                                <div class="notification-indicator"></div>
+                                <div class="notification-icon-enhanced assigned">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="notification-content-enhanced">
+                                    <div class="notification-header-card">
+                                        <h4>Complaint Assigned</h4>
+                                        <span class="notification-time-enhanced">3 hours ago</span>
+                                    </div>
+                                    <p class="notification-message">Your complaint #CMP-2024-003 has been assigned to our maintenance team. You'll receive updates as work progresses.</p>
+                                    <div class="notification-meta">
+                                        <span class="complaint-id">#CMP-2024-003</span>
+                                        <span class="status-badge pending">Assigned</span>
+                                    </div>
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="action-btn-small view-complaint" title="View Complaint">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/>
+                                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                    <button class="action-btn-small mark-read" title="Mark as Read">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Empty state for when no notifications -->
+                            <div class="notifications-empty-state" style="display: none;">
+                                <div class="empty-icon-notifications">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h4>No Notifications</h4>
+                                <p>You're all caught up! No new notifications at the moment.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -282,7 +859,76 @@
                 </div>
                 
                 <div class="profile-container" id="profileContainer">
-                    <!-- Profile content will be populated by JavaScript -->
+                    <div class="profile-content-wrapper">
+                        <div class="profile-header-section">
+                            <div class="profile-avatar-wrapper">
+                                <div class="profile-avatar-display">
+                                    <span class="avatar-initials">JD</span>
+                                </div>
+                                <div class="profile-basic-info">
+                                    <h2 class="profile-name">John Doe</h2>
+                                    <p class="profile-email">john.doe@example.com</p>
+                                    <span class="profile-role">Citizen</span>
+                                </div>
+                            </div>
+                            <div class="profile-quick-stats">
+                                <div class="quick-stat">
+                                    <span class="stat-num">12</span>
+                                    <span class="stat-text">Total</span>
+                                </div>
+                                <div class="quick-stat">
+                                    <span class="stat-num">7</span>
+                                    <span class="stat-text">Resolved</span>
+                                </div>
+                                <div class="quick-stat">
+                                    <span class="stat-num">3</span>
+                                    <span class="stat-text">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-details-grid">
+                            <div class="profile-info-card">
+                                <div class="card-header-profile">
+                                    <h3>Personal Information</h3>
+                                </div>
+                                <div class="info-list">
+                                    <div class="info-row">
+                                        <span class="info-label">Full Name:</span>
+                                        <span class="info-value">John Doe</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Phone:</span>
+                                        <span class="info-value">+1 (555) 123-4567</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Address:</span>
+                                        <span class="info-value">123 Main Street, City</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-info-card">
+                                <div class="card-header-profile">
+                                    <h3>Account Settings</h3>
+                                </div>
+                                <div class="settings-list">
+                                    <div class="setting-row">
+                                        <span class="setting-label">Email Notifications</span>
+                                        <span class="setting-status enabled">Enabled</span>
+                                    </div>
+                                    <div class="setting-row">
+                                        <span class="setting-label">SMS Alerts</span>
+                                        <span class="setting-status disabled">Disabled</span>
+                                    </div>
+                                    <div class="setting-row">
+                                        <span class="setting-label">Two-Factor Auth</span>
+                                        <span class="setting-status disabled">Disabled</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
@@ -290,6 +936,259 @@
 
 {% block extra_js %}
 <script src="{% static 'js/dashboard.js' %}"></script>
+<script>
+// Footer visibility detection for sidebar fade effect
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.body.classList.add('footer-visible');
+    } else {
+      document.body.classList.remove('footer-visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+const footer = document.querySelector('.civicfix-footer');
+if (footer) {
+  observer.observe(footer);
+}
+
+
+</script>
 {% endblock %}
 
 {% endblock %}
+// Fix complaints filters functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize filters when complaints section loads
+    function initComplaintsFilters() {
+        const statusFilter = document.getElementById('statusFilter');
+        const categoryFilter = document.getElementById('categoryFilter');
+        
+        if (statusFilter && categoryFilter) {
+            statusFilter.addEventListener('change', filterComplaints);
+            categoryFilter.addEventListener('change', filterComplaints);
+        }
+    }
+    
+    // Enhanced filter function
+    function filterComplaints() {
+        const statusFilter = document.getElementById('statusFilter');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const complaintsGrid = document.getElementById('allComplaintsGrid');
+        
+        if (!statusFilter || !categoryFilter || !complaintsGrid) return;
+        
+        const statusValue = statusFilter.value;
+        const categoryValue = categoryFilter.value;
+        
+        let filteredComplaints = complaintsData;
+        
+        // Apply status filter
+        if (statusValue !== 'all') {
+            filteredComplaints = filteredComplaints.filter(complaint => complaint.status === statusValue);
+        }
+        
+        // Apply category filter
+        if (categoryValue !== 'all') {
+            filteredComplaints = filteredComplaints.filter(complaint => complaint.category === categoryValue);
+        }
+        
+        // Render filtered results with animation
+        complaintsGrid.style.opacity = '0';
+        complaintsGrid.style.transform = 'translateY(10px)';
+        
+        setTimeout(() => {
+            renderComplaintsToGrid(filteredComplaints, complaintsGrid);
+            complaintsGrid.style.transition = 'all 0.3s ease';
+            complaintsGrid.style.opacity = '1';
+            complaintsGrid.style.transform = 'translateY(0)';
+        }, 150);
+    }
+    
+    // Override the loadComplaintsContent function to include filter initialization
+    const originalLoadComplaintsContent = window.loadComplaintsContent;
+    window.loadComplaintsContent = function() {
+        if (originalLoadComplaintsContent) {
+            originalLoadComplaintsContent();
+        }
+        // Initialize filters after content loads
+        setTimeout(initComplaintsFilters, 100);
+    };
+    
+    // Initialize filters if complaints section is already active
+    if (document.getElementById('complaints-section').classList.contains('active')) {
+        setTimeout(initComplaintsFilters, 100);
+    }
+});
+// Fix notification buttons functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize notification controls
+    function initNotificationControls() {
+        // Mark all as read button
+        const markAllReadBtn = document.getElementById('markAllRead');
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function() {
+                markAllNotificationsAsReadEnhanced();
+            });
+        }
+        
+        // Filter buttons
+        const filterButtons = document.querySelectorAll('.filter-btn-enhanced');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                // Filter notifications
+                filterNotificationsEnhanced(this.dataset.filter);
+            });
+        });
+        
+        // Individual notification actions
+        const actionButtons = document.querySelectorAll('.action-btn-small');
+        actionButtons.forEach(btn => {
+            if (btn.classList.contains('mark-read')) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    markSingleNotificationAsRead(this.closest('.notification-card-enhanced'));
+                });
+            }
+        });
+    }
+    
+    // Enhanced mark all as read function
+    function markAllNotificationsAsReadEnhanced() {
+        const unreadNotifications = document.querySelectorAll('.notification-card-enhanced.unread');
+        
+        unreadNotifications.forEach((notification, index) => {
+            setTimeout(() => {
+                notification.classList.remove('unread');
+                notification.style.opacity = '0.8';
+                
+                // Add success animation
+                const icon = notification.querySelector('.notification-icon-enhanced');
+                if (icon) {
+                    icon.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        icon.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            }, index * 100);
+        });
+        
+        // Update filter counts
+        updateFilterCounts();
+        
+        // Success feedback
+        const markAllBtn = document.getElementById('markAllRead');
+        if (markAllBtn) {
+            const originalText = markAllBtn.innerHTML;
+            markAllBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                All marked as read!
+            `;
+            setTimeout(() => {
+                markAllBtn.innerHTML = originalText;
+            }, 2000);
+        }
+    }
+    
+    // Mark single notification as read
+    function markSingleNotificationAsRead(notification) {
+        if (notification && notification.classList.contains('unread')) {
+            notification.classList.remove('unread');
+            notification.style.opacity = '0.8';
+            
+            // Add success animation
+            const icon = notification.querySelector('.notification-icon-enhanced');
+            if (icon) {
+                icon.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    icon.style.transform = 'scale(1)';
+                }, 200);
+            }
+            
+            // Update filter counts
+            updateFilterCounts();
+        }
+    }
+    
+    // Enhanced filter function for notifications
+    function filterNotificationsEnhanced(filter) {
+        const notifications = document.querySelectorAll('.notification-card-enhanced');
+        
+        notifications.forEach(notification => {
+            const isUnread = notification.classList.contains('unread');
+            const isUpdate = notification.dataset.type === 'update';
+            
+            let show = true;
+            if (filter === 'unread' && !isUnread) show = false;
+            if (filter === 'updates' && !isUpdate) show = false;
+            
+            if (show) {
+                notification.style.display = 'flex';
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            } else {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 200);
+            }
+        });
+        
+        // Show empty state if no notifications match filter
+        setTimeout(() => {
+            const visibleNotifications = document.querySelectorAll('.notification-card-enhanced[style*="display: flex"], .notification-card-enhanced:not([style*="display: none"])');
+            const emptyState = document.querySelector('.notifications-empty-state');
+            
+            if (visibleNotifications.length === 0 && emptyState) {
+                emptyState.style.display = 'block';
+            } else if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+        }, 250);
+    }
+    
+    // Update filter counts
+    function updateFilterCounts() {
+        const allNotifications = document.querySelectorAll('.notification-card-enhanced');
+        const unreadNotifications = document.querySelectorAll('.notification-card-enhanced.unread');
+        const updateNotifications = document.querySelectorAll('.notification-card-enhanced[data-type="update"]');
+        
+        // Update count badges
+        const allCount = document.querySelector('.filter-btn-enhanced[data-filter="all"] .filter-count');
+        const unreadCount = document.querySelector('.filter-btn-enhanced[data-filter="unread"] .filter-count');
+        const updatesCount = document.querySelector('.filter-btn-enhanced[data-filter="updates"] .filter-count');
+        
+        if (allCount) allCount.textContent = allNotifications.length;
+        if (unreadCount) unreadCount.textContent = unreadNotifications.length;
+        if (updatesCount) updatesCount.textContent = updateNotifications.length;
+    }
+    
+    // Override the loadNotificationsContent function to include controls initialization
+    const originalLoadNotificationsContent = window.loadNotificationsContent;
+    window.loadNotificationsContent = function() {
+        if (originalLoadNotificationsContent) {
+            originalLoadNotificationsContent();
+        }
+        // Initialize controls after content loads
+        setTimeout(() => {
+            initNotificationControls();
+            updateFilterCounts();
+        }, 100);
+    };
+    
+    // Initialize controls if notifications section is already active
+    if (document.getElementById('notifications-section').classList.contains('active')) {
+        setTimeout(() => {
+            initNotificationControls();
+            updateFilterCounts();
+        }, 100);
+    }
+});

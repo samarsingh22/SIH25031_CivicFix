@@ -7,6 +7,7 @@ class Complaint(models.Model):
     description = models.TextField()
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    photo = models.ImageField(upload_to='complaints/', blank=True, null=True)
     is_sos = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 

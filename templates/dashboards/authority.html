@@ -1,258 +1,2483 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Authority Dashboard - CivicFix{% endblock %}
+{% block body_class %}welcome-page{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/authority.css' %}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/welcome.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdn.maptiler.com/maptiler-sdk-js/latest/maptiler-sdk.css" />
+  <style>
+    /* Authority Dashboard with Welcome Page Theme */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      height: 100vh;
+      background: var(--white);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--glass-border);
+      z-index: 1000;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .sidebar-header {
+      padding: 2rem;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--vibrant-orange);
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+    
+    .sidebar-menu {
+      flex: 1;
+      padding: 1rem 0;
+    }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 2rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+      border-radius: 0 25px 25px 0;
+      margin-right: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 102, 0, 0.1), transparent);
+      transition: left 0.5s;
+    }
+    
+    .nav-link:hover::before {
+      left: 100%;
+    }
+    
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--text-primary);
+      background: rgba(255, 102, 0, 0.1);
+      transform: translateX(8px);
+      box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
+    }
+    
+    .nav-link.active {
+      background: var(--vibrant-orange);
+      color: var(--white);
+      border-left: 3px solid var(--primary-blue);
+    }
+    
+    .sidebar-footer {
+      padding: 2rem;
+      border-top: 1px solid var(--glass-border);
+    }
+    
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      padding: 2rem;
+      transition: var(--transition);
+    }
+    
+    .header {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      transition: var(--transition);
+    }
+    
+    .header:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(255, 102, 0, 0.15);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+    
+    /* Enhanced Hero Section */
+    .hero-header {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: heroEntrance 1s ease-out;
+    }
+    
+    @keyframes heroEntrance {
+      0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+      }
+      50% {
+        opacity: 0.7;
+        transform: translateY(20px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .hero-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(0, 51, 102, 0.05) 0%, transparent 50%);
+      animation: heroGlow 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    .hero-header:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 50px rgba(255, 102, 0, 0.2);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .civic-animation {
+      position: relative;
+      height: 400px;
+      background: linear-gradient(135deg, rgba(0, 51, 102, 0.05) 0%, rgba(255, 102, 0, 0.05) 100%);
+      border-radius: 24px;
+      overflow: hidden;
+      animation: slideInRight 0.8s ease-out 0.4s both;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+    }
+    
+    .city-skyline {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      padding: 0 2rem;
+    }
+    
+    .building {
+      background: var(--gradient-primary);
+      border-radius: 4px 4px 0 0;
+      position: relative;
+      animation: buildingGrow 2s ease-out;
+    }
+    
+    .building::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+    }
+    
+    .building-1 {
+      width: 40px;
+      height: 120px;
+      animation-delay: 0.2s;
+    }
+    
+    .building-2 {
+      width: 35px;
+      height: 160px;
+      animation-delay: 0.4s;
+    }
+    
+    .building-3 {
+      width: 45px;
+      height: 200px;
+      animation-delay: 0.6s;
+    }
+    
+    .building-4 {
+      width: 38px;
+      height: 140px;
+      animation-delay: 0.8s;
+    }
+    
+    .building-5 {
+      width: 42px;
+      height: 180px;
+      animation-delay: 1s;
+    }
+    
+    .floating-icons {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+    
+    .icon-item {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--vibrant-orange);
+      font-size: 1.2rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-md);
+      animation: iconFloat 4s ease-in-out infinite;
+    }
+    
+    .icon-1 {
+      top: 20%;
+      left: 15%;
+      animation-delay: 0s;
+    }
+    
+    .icon-2 {
+      top: 15%;
+      right: 20%;
+      animation-delay: 1s;
+    }
+    
+    .icon-3 {
+      top: 45%;
+      left: 10%;
+      animation-delay: 2s;
+    }
+    
+    .icon-4 {
+      top: 35%;
+      right: 15%;
+      animation-delay: 3s;
+    }
+    
+    .pulse-rings {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .pulse-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid var(--vibrant-orange);
+      border-radius: 50%;
+      animation: pulseRing 3s ease-out infinite;
+    }
+    
+    .ring-1 {
+      width: 60px;
+      height: 60px;
+      animation-delay: 0s;
+    }
+    
+    .ring-2 {
+      width: 100px;
+      height: 100px;
+      animation-delay: 1s;
+    }
+    
+    .ring-3 {
+      width: 140px;
+      height: 140px;
+      animation-delay: 2s;
+    }
+    
+    @keyframes buildingGrow {
+      0% {
+        height: 0;
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    
+    @keyframes iconFloat {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-15px) rotate(5deg);
+      }
+    }
+    
+    @keyframes pulseRing {
+      0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
+    
+    .welcome-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 102, 0, 0.1);
+      color: var(--vibrant-orange);
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      animation: slideInUp 0.8s ease-out;
+      border: 1px solid rgba(255, 102, 0, 0.2);
+    }
+    
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      animation: slideInUp 0.8s ease-out 0.2s both;
+    }
+    
+    .user-name {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+      max-width: 500px;
+      animation: slideInUp 0.8s ease-out 0.4s both;
+    }
+    
+    .hero-features {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      animation: slideInUp 0.8s ease-out 0.6s both;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 102, 0, 0.1);
+      padding: 0.75rem 1rem;
+      border-radius: 25px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: var(--transition);
+      animation: float 3s ease-in-out infinite;
+      border: 1px solid rgba(255, 102, 0, 0.2);
+    }
+    
+    .feature-item:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+    
+    .feature-item:nth-child(3) {
+      animation-delay: 1s;
+    }
+    
+    .feature-item:hover {
+      background: rgba(255, 102, 0, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 102, 0, 0.3);
+    }
+    
+    .feature-item i {
+      color: var(--vibrant-orange);
+    }
+    
+    .hero-visual {
+      position: relative;
+      animation: slideInRight 0.8s ease-out 0.4s both;
+    }
+    
+    .user-profile-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 28px;
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--glass-border);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    
+    .user-profile-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(255, 102, 0, 0.2);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 8px 20px rgba(255, 102, 0, 0.3);
+      animation: avatarGlow 3s ease-in-out infinite;
+    }
+    
+    .profile-info h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+    
+    .role-badge {
+      background: rgba(255, 102, 0, 0.1);
+      color: var(--vibrant-orange);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      display: inline-block;
+    }
+    
+    .profile-stats {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+    
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .stat i {
+      color: var(--vibrant-orange);
+    }
+    
+    .floating-elements {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+    }
+    
+    .floating-card {
+      position: absolute;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border: 1px solid var(--glass-border);
+      max-width: 180px;
+      animation: cardFloat 6s ease-in-out infinite;
+    }
+    
+    .card-1 {
+      top: 10%;
+      right: -10%;
+      animation-delay: 0s;
+    }
+    
+    .card-2 {
+      top: 50%;
+      left: -15%;
+      animation-delay: 2s;
+    }
+    
+    .card-3 {
+      bottom: 15%;
+      right: -5%;
+      animation-delay: 4s;
+    }
+    
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1rem;
+    }
+    
+    .card-1 .card-icon {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
+    .card-2 .card-icon {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    
+    .card-3 .card-icon {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .card-content {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .card-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+    }
+    
+    .card-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    @keyframes heroGlow {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+    
+    @keyframes cardFloat {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+    
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    
+    .dashboard-header {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      transition: var(--transition);
+    }
+    
+    .dashboard-header:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(255, 102, 0, 0.15);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .header-left h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    
+    .header-left p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.5rem;
+      font-weight: 600;
+      box-shadow: 0 8px 20px rgba(255, 102, 0, 0.3);
+      animation: avatarGlow 3s ease-in-out infinite;
+    }
+    
+    @keyframes avatarGlow {
+      0%, 100% { box-shadow: 0 8px 20px rgba(255, 102, 0, 0.3); }
+      50% { box-shadow: 0 8px 30px rgba(255, 102, 0, 0.5); }
+    }
+    
+    .user-details h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+    
+    .user-details p {
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+    
+    .user-role {
+      background: rgba(255, 102, 0, 0.1);
+      color: var(--vibrant-orange);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .nav-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 1rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+      animation: tabsSlideIn 0.8s ease-out 0.3s both;
+    }
+    
+    .nav-tabs::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.03) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(0, 51, 102, 0.03) 0%, transparent 50%);
+      animation: tabsGlow 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    @keyframes tabsSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes tabsGlow {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.5rem;
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid transparent;
+    }
+    
+    .nav-tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 102, 0, 0.15), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .nav-tab:hover::before {
+      left: 100%;
+    }
+    
+    .nav-tab:hover {
+      color: var(--text-primary);
+      background: rgba(255, 102, 0, 0.08);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(255, 102, 0, 0.25);
+      border-color: rgba(255, 102, 0, 0.3);
+    }
+    
+    .nav-tab.active {
+      background: var(--vibrant-orange);
+      color: var(--white);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(255, 102, 0, 0.4);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .nav-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 3px;
+      background: var(--white);
+      border-radius: 2px;
+      animation: activeIndicator 0.3s ease-out;
+    }
+    
+    @keyframes activeIndicator {
+      from {
+        width: 0;
+        opacity: 0;
+      }
+      to {
+        width: 60%;
+        opacity: 1;
+      }
+    }
+    
+    .content-section {
+      display: none;
+      opacity: 0;
+      transform: translateY(30px) scale(0.98);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .content-section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      animation: sectionFadeIn 0.6s ease-out;
+    }
+    
+    @keyframes sectionFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      50% {
+        opacity: 0.7;
+        transform: translateY(10px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .section-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .section-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .filter-select {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-width: 150px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .filter-select::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 102, 0, 0.15), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .filter-select:hover::before {
+      left: 100%;
+    }
+    
+    .filter-select:hover,
+    .filter-select:focus {
+      border-color: var(--vibrant-orange);
+      box-shadow: 0 6px 20px rgba(255, 102, 0, 0.25);
+      outline: none;
+      transform: translateY(-3px) scale(1.02);
+      background: rgba(255, 102, 0, 0.08);
+    }
+    
+    .filter-select option {
+      background: var(--white);
+      color: var(--text-primary);
+      padding: 0.5rem;
+    }
+    
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.5rem;
+      background: var(--vibrant-orange);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid transparent;
+    }
+    
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .action-btn:hover::before {
+      left: 100%;
+    }
+    
+    .action-btn:hover {
+      background: #e55a00;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(255, 102, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .action-btn:active {
+      transform: translateY(-1px) scale(1.02);
+      transition: all 0.1s ease;
+    }
+    
+    .action-btn.secondary {
+      background: transparent;
+      border: 2px solid var(--primary-blue);
+      color: var(--primary-blue);
+    }
+    
+    .action-btn.secondary:hover {
+      background: var(--primary-blue);
+      color: var(--white);
+    }
+    
+    .map-section {
+      margin-bottom: 3rem;
+    }
+    
+    .map-section h3 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+    
+    .map-container {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+      overflow: hidden;
+      transition: var(--transition);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .map-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(255, 102, 0, 0.15);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(255, 102, 0, 0.05);
+    }
+    
+    .map-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .map-status {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .map-count {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    
+    .fullscreen-btn {
+      background: rgba(255, 102, 0, 0.1);
+      border: 1px solid rgba(255, 102, 0, 0.2);
+      border-radius: 12px;
+      padding: 0.75rem;
+      color: var(--vibrant-orange);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .fullscreen-btn:hover {
+      background: var(--vibrant-orange);
+      color: var(--white);
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+    }
+    
+    #map {
+      width: 100%;
+      height: 400px;
+      border: none;
+    }
+    
+    .complaints-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+    
+    .complaint-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 2rem;
+      border: 1px solid var(--glass-border);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      animation: cardSlideIn 0.6s ease-out;
+    }
+    
+    .complaint-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+      transform: scaleX(0);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: left;
+    }
+    
+    .complaint-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 102, 0, 0.05) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    
+    .complaint-card:hover::before {
+      transform: scaleX(1);
+    }
+    
+    .complaint-card:hover::after {
+      opacity: 1;
+    }
+    
+    .complaint-card:hover {
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 20px 50px rgba(255, 102, 0, 0.25);
+      border-color: var(--vibrant-orange);
+    }
+    
+    @keyframes cardSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .complaint-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+    
+    .complaint-info h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .complaint-location {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .complaint-priority {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .priority-high {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .priority-medium {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    
+    .priority-low {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .complaint-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .complaint-category {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .complaint-date {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    
+    .complaint-id {
+      color: var(--vibrant-orange);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .complaint-status {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-pending {
+      background: rgba(234, 179, 8, 0.1);
+      color: #eab308;
+      border: 1px solid rgba(234, 179, 8, 0.2);
+    }
+    
+    .status-progress {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .status-resolved {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .complaint-image {
+      width: 100%;
+      height: 150px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--glass-border);
+      transition: var(--transition);
+    }
+    
+    .complaint-image:hover {
+      transform: scale(1.02);
+    }
+    
+    .complaint-description {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    
+    .complaint-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .complaint-actions .action-btn {
+      flex: 1;
+      justify-content: center;
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .complaint-actions .action-btn.secondary {
+      background: rgba(255, 102, 0, 0.1);
+      color: var(--vibrant-orange);
+      border: 1px solid rgba(255, 102, 0, 0.2);
+    }
+    
+    .complaint-actions .action-btn.secondary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 102, 0, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .complaint-actions .action-btn.secondary:hover::before {
+      left: 100%;
+    }
+    
+    .complaint-actions .action-btn.secondary:hover {
+      background: var(--vibrant-orange);
+      color: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 102, 0, 0.3);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .complaint-actions .action-btn i {
+      margin-right: 0.5rem;
+      transition: var(--transition);
+    }
+    
+    .complaint-actions .action-btn:hover i {
+      transform: scale(1.1);
+    }
+    
+    /* Analytics Section - 2x2 Grid Layout */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+      height: 650px;
+    }
+    
+    .analytics-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .analytics-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(255, 102, 0, 0.15);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .analytics-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .chart-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 102, 0, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 102, 0, 0.1);
+      padding: 0.5rem;
+      min-height: 220px;
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      width: 100%;
+      flex: 1;
+    }
+    
+    .metric-item {
+      text-align: center;
+      padding: 1rem 0.75rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      transition: var(--transition);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100px;
+    }
+    
+    .metric-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(255, 102, 0, 0.15);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .metric-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--vibrant-orange);
+      margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+    }
+    
+    /* Team Management */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .team-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 2rem;
+      transition: var(--transition);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .team-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .team-card:hover::before {
+      transform: scaleX(1);
+    }
+    
+    .team-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(255, 102, 0, 0.2);
+      border-color: var(--vibrant-orange);
+    }
+    
+    .team-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--white);
+      margin: 0 auto 1.5rem;
+      border: 3px solid var(--vibrant-orange);
+      box-shadow: 0 8px 20px rgba(255, 102, 0, 0.3);
+      transition: var(--transition);
+    }
+    
+    .team-card:hover .team-avatar {
+      transform: scale(1.1);
+      box-shadow: 0 12px 25px rgba(255, 102, 0, 0.4);
+    }
+    
+    .team-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .team-role {
+      color: var(--vibrant-orange);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .team-email {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .team-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .team-stat {
+      background: rgba(255, 102, 0, 0.05);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 102, 0, 0.1);
+      transition: var(--transition);
+    }
+    
+    .team-stat:hover {
+      background: rgba(255, 102, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .team-stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--vibrant-orange);
+    }
+    
+    .team-stat-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .team-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .team-actions .action-btn {
+      flex: 1;
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(240, 244, 248, 0.8);
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+    }
+    
+    .modal-content {
+      background: rgba(248, 250, 252, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 0;
+      max-width: 500px;
+      width: 90%;
+      max-height: 70vh;
+      overflow: hidden;
+      transform: scale(0.9);
+      transition: var(--transition);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+    
+    .modal-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .modal-overlay.active .modal-content::before {
+      transform: scaleX(1);
+    }
+    
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(248, 250, 252, 0.9);
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .modal-header h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .modal-header h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: var(--transition);
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+    
+    .modal-close::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .modal-close:hover::before {
+      left: 100%;
+    }
+    
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+      color: var(--text-primary);
+      background: rgba(240, 244, 248, 0.9);
+      backdrop-filter: blur(20px);
+      position: relative;
+    }
+    
+    .modal-body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 51, 102, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(255, 102, 0, 0.02) 0%, transparent 50%);
+      animation: backgroundPulse 15s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    .modal-body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 0%, rgba(255, 102, 0, 0.01) 25%, transparent 50%, rgba(0, 51, 102, 0.01) 75%, transparent 100%);
+      animation: gradientShift 20s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    @keyframes backgroundPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    
+    @keyframes gradientShift {
+      0%, 100% { transform: translateX(-50px) rotate(0deg); }
+      50% { transform: translateX(50px) rotate(180deg); }
+    }
+    
+    .modal-body * {
+      color: var(--text-primary) !important;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .modal-body h1, .modal-body h2, .modal-body h3, .modal-body h4, .modal-body h5, .modal-body h6 {
+      color: var(--primary-blue) !important;
+    }
+    
+    .modal-body p, .modal-body span, .modal-body div {
+      color: var(--text-primary) !important;
+    }
+    
+    .modal-body strong, .modal-body b {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 600 !important;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(248, 250, 252, 0.9);
+      backdrop-filter: blur(20px);
+    }
+    
+    /* Fullscreen Modal */
+    .fullscreen-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--soft-white);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+    }
+    
+    .fullscreen-modal.active {
+      display: flex;
+    }
+    
+    .fullscreen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background: var(--glass-bg);
+      border-bottom: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+    }
+    
+    .fullscreen-header h3 {
+      color: var(--text-primary);
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .close-fullscreen {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.75rem;
+      border-radius: 12px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .close-fullscreen:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      transform: scale(1.1);
+    }
+    
+    .fullscreen-map {
+      flex: 1;
+      width: 100%;
+    }
+    
+    #fullscreenMap {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    /* Enhanced Dropdown Animations */
+    .section-actions {
+      position: relative;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .section-actions::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, rgba(255, 102, 0, 0.08) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .section-actions:hover::before {
+      width: 250px;
+      height: 250px;
+    }
+    
+    .section-actions > * {
+      animation: actionItemFloat 3s ease-in-out infinite;
+    }
+    
+    .section-actions > *:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+    
+    .section-actions > *:nth-child(3) {
+      animation-delay: 1s;
+    }
+    
+    .section-actions > *:nth-child(4) {
+      animation-delay: 1.5s;
+    }
+    
+    @keyframes actionItemFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+    
+    .filter-select:focus {
+      animation: filterPulse 0.6s ease-out;
+    }
+    
+    @keyframes filterPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    /* View Details Button Enhancement */
+    .complaint-actions .action-btn.secondary {
+      animation: detailsButtonFloat 3s ease-in-out infinite;
+    }
+    
+    .complaint-actions .action-btn.secondary:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+    
+    @keyframes detailsButtonFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+    
+    .complaint-actions .action-btn.secondary:hover {
+      animation: none;
+    }
+    
+    /* Modal Enhancement */
+    .modal-overlay.active {
+      animation: modalFadeIn 0.3s ease-out;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-overlay.active .modal-content {
+      animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        transform: scale(0.8) translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .complaints-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+      }
+      
+      .analytics-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        height: auto;
+        gap: 1rem;
+      }
+      
+      .analytics-card {
+        height: auto;
+        min-height: 300px;
+      }
+      
+      .team-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+      
+      .dashboard-header {
+        padding: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .header-left h1 {
+        font-size: 2rem;
+      }
+      
+      .nav-tabs {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .nav-tab {
+        justify-content: center;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .section-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .complaints-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .analytics-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        height: auto;
+        gap: 1rem;
+      }
+      
+      .analytics-card {
+        height: auto;
+        min-height: 280px;
+      }
+      
+      .chart-container {
+        min-height: 200px;
+      }
+      
+      .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .metric-item {
+        padding: 1.25rem 0.75rem;
+      }
+      
+      .team-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .modal-content {
+        width: 95%;
+        margin: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .dashboard-header {
+        padding: 1rem;
+      }
+      
+      .header-left h1 {
+        font-size: 1.75rem;
+      }
+      
+      .complaint-card,
+      .analytics-card,
+      .team-card {
+        padding: 1.5rem;
+      }
+      
+      .analytics-card {
+        height: auto;
+        min-height: 250px;
+      }
+      
+      .chart-container {
+        min-height: 180px;
+      }
+      
+      .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      
+      .metric-item {
+        padding: 1rem;
+        min-height: 80px;
+      }
+      
+      .metric-value {
+        font-size: 1.5rem;
+      }
+      
+      .metric-label {
+        font-size: 0.75rem;
+      }
+      
+      .complaint-actions,
+      .team-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+    }
+  </style>
 {% endblock %}
 
+
 {% block content %}
-<h2 class="mb-3">Authority Dashboard</h2>
+<!-- Animated Background -->
+<div class="animated-bg">
+  <div class="bg-shapes">
+    <div class="shape-1"></div>
+    <div class="shape-2"></div>
+    <div class="shape-3"></div>
+    <div class="shape-4"></div>
+    <div class="shape-5"></div>
+    <div class="shape-6"></div>
+  </div>
+</div>
 
-<!-- Background Animation -->
-    <div class="background-animation">
-        <div class="floating-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-            <div class="shape shape-4"></div>
+<div class="dashboard-container">
+  <div class="container">
+    <!-- Enhanced Hero Header -->
+    <section class="hero-header">
+      <div class="hero-content">
+        <div class="hero-left">
+          <div class="welcome-badge">
+            <i class="fas fa-shield-alt"></i>
+            <span>Authority Portal</span>
+          </div>
+          <h1 class="hero-title">
+            Hello, <span class="user-name">{{ request.user.first_name|default:request.user.username }}</span> 👋
+          </h1>
+          <p class="hero-subtitle">
+            Ready to make your city better? Your authority dashboard is equipped with powerful tools to manage complaints, track progress, and coordinate with your team effectively.
+          </p>
+          <div class="hero-features">
+            <div class="feature-item">
+              <i class="fas fa-tasks"></i>
+              <span>Manage Complaints</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-chart-line"></i>
+              <span>Track Analytics</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-users"></i>
+              <span>Team Coordination</span>
+            </div>
+          </div>
         </div>
+        <div class="hero-right">
+          <div class="civic-animation">
+            <div class="city-skyline">
+              <div class="building building-1"></div>
+              <div class="building building-2"></div>
+              <div class="building building-3"></div>
+              <div class="building building-4"></div>
+              <div class="building building-5"></div>
+            </div>
+            <div class="floating-icons">
+              <div class="icon-item icon-1">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="icon-item icon-2">
+                <i class="fas fa-tools"></i>
+              </div>
+              <div class="icon-item icon-3">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="icon-item icon-4">
+                <i class="fas fa-users"></i>
+              </div>
+            </div>
+            <div class="pulse-rings">
+              <div class="pulse-ring ring-1"></div>
+              <div class="pulse-ring ring-2"></div>
+              <div class="pulse-ring ring-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchSection('assigned')">
+        <i class="fas fa-tasks"></i>
+        <span>Assigned Complaints</span>
+      </button>
+      <button class="nav-tab" onclick="switchSection('analytics')">
+        <i class="fas fa-chart-line"></i>
+        <span>Analytics</span>
+      </button>
+      <button class="nav-tab" onclick="switchSection('team')">
+        <i class="fas fa-users"></i>
+        <span>Team Management</span>
+      </button>
     </div>
 
-    <!-- Mobile Overlay -->
-    <div class="mobile-overlay" id="mobileOverlay"></div>
-
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor"/>
-                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" fill="none"/>
-                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
-                <span class="logo-text">CivicFix Authority</span>
+    <!-- Assigned Complaints Section -->
+    <section class="content-section active" id="assigned-section">
+      <!-- Map Section -->
+      <div class="map-section">
+        <h3>Complaints Map</h3>
+        <div class="map-container">
+          <div class="map-header">
+            <div class="map-info">
+              <span class="map-status">Live View</span>
+              <span class="map-count" id="mapComplaintCount">Loading...</span>
             </div>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+            <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()">
+              <i class="fas fa-expand"></i>
             </button>
+          </div>
+          <div id="map"></div>
         </div>
+      </div>
 
-        <div class="sidebar-menu">
-            <a href="#" class="nav-link active" data-section="assigned">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Assigned Complaints</span>
-            </a>
-            <a href="#" class="nav-link" data-section="analytics">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 3V21H21M7 14L12 9L16 13L21 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Analytics</span>
-            </a>
-            <a href="#" class="nav-link" data-section="team">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Team Management</span>
-            </a>
+      <div class="section-header">
+        <h2>Assigned Complaints</h2>
+        <div class="section-actions">
+          <select id="categoryFilter" class="filter-select">
+            <option value="all">All Categories</option>
+            <option value="roads">Roads</option>
+            <option value="lights">Streetlights</option>
+            <option value="water">Water Issues</option>
+            <option value="garbage">Garbage</option>
+            <option value="maintenance">Maintenance</option>
+          </select>
+          <select id="priorityFilter" class="filter-select">
+            <option value="all">All Priorities</option>
+            <option value="high">High Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="low">Low Priority</option>
+          </select>
+          <select id="statusFilter" class="filter-select">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <button class="action-btn">
+            <i class="fas fa-download"></i>
+            <span>Export</span>
+          </button>
         </div>
+      </div>
+      
+      <div class="complaints-grid" id="assignedComplaintsGrid">
+        <!-- Dynamic content will be loaded here -->
+      </div>
+    </section>
 
-        <div class="sidebar-footer">
-            <a href="index.html" class="nav-link logout">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9M16 17L21 12M21 12L16 7M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Logout</span>
-            </a>
+    <!-- Analytics Section -->
+    <section class="content-section" id="analytics-section">
+      <div class="section-header">
+        <h2>Analytics & Reports</h2>
+        <div class="section-actions">
+          <button class="action-btn secondary">
+            <i class="fas fa-download"></i>
+            <span>Export Report</span>
+          </button>
         </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-content" id="mainContent">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <h1 class="page-title">Authority Dashboard</h1>
-                <p class="page-subtitle">Manage and resolve citizen complaints efficiently</p>
-            </div>
-            <div class="header-right">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <span>JD</span>
-                    </div>
-                    <div class="user-details">
-                        <div class="welcome-text">
-                        <h1 class="display-6 mb-2">Hello, {{ request.user.first_name|default:request.user.username }}</h1>
-                            <p>Welcome back to your CivicFix dashboard</p>
-                        </div>
-                        <span class="user-role">Senior Authority</span>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Assigned Complaints Section -->
-        <section class="content-section active" id="assigned-section">
-            <div class="section-header">
-                <h2>Assigned Complaints</h2>
-                <div class="section-actions">
-                    <select id="priorityFilter" class="filter-select">
-                        <option value="all">All Priorities</option>
-                        <option value="high">High Priority</option>
-                        <option value="medium">Medium Priority</option>
-                        <option value="low">Low Priority</option>
-                    </select>
-                    <select id="statusFilter" class="filter-select">
-                        <option value="all">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                    </select>
-                </div>
-            </div>
-            <div class="complaints-grid" id="assignedComplaintsGrid">
-                <!-- Dynamic content will be loaded here -->
-            </div>
-            
-            <!-- Sample complaint cards for demonstration -->
-            <div class="complaint-card fade-in">
-                <div class="complaint-header">
-                    <div class="complaint-info">
-                        <h3>Pothole near Sector 5 Road</h3>
-                        <div class="complaint-location">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2Z" fill="currentColor"/>
-                            </svg>
-                            Salt Lake, Kolkata
-                        </div>
-                    </div>
-                    <div class="complaint-priority priority-high">HIGH</div>
-                </div>
-                
-                <div class="complaint-meta">
-                    <div class="complaint-category">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor"/>
-                        </svg>
-                        Roads
-                    </div>
-                    <div class="complaint-date">Aug 12, 2024</div>
-                    <div class="complaint-id">CF-101</div>
-                </div>
-                
-                <div class="complaint-status status-pending">PENDING</div>
-                
-                <p class="complaint-description">Large pothole causing vehicle damage and traffic disruption. Immediate repair needed for safety.</p>
-                
-                <div class="complaint-actions">
-                    <button class="action-btn primary">Start Progress</button>
-                    <button class="action-btn secondary">View Details</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Analytics Section -->
-        <section class="content-section" id="analytics-section">
-            <div class="section-header">
-                <h2>Analytics & Reports</h2>
-                <div class="section-actions">
-                    <button class="action-btn secondary">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M7 10L12 15L17 10M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        Export Report
-                    </button>
-                </div>
-            </div>
-            
-            <div class="analytics-grid">
-                <div class="analytics-card">
-                    <h3>Complaint Statistics</h3>
-                    <div class="chart-container">
-                        <canvas id="complaintsChart" width="400" height="200"></canvas>
-                    </div>
-                </div>
-                
-                <div class="analytics-card">
-                    <h3>Category Distribution</h3>
-                    <div class="chart-container">
-                        <canvas id="categoryChart" width="400" height="200"></canvas>
-                    </div>
-                </div>
-                
-                <div class="analytics-card">
-                    <h3>Resolution Timeline</h3>
-                    <div class="chart-container">
-                        <canvas id="timelineChart" width="400" height="200"></canvas>
-                    </div>
-                </div>
-                
-                <div class="analytics-card">
-                    <h3>Performance Metrics</h3>
-                    <div class="metrics-grid">
-                        <div class="metric-item">
-                            <div class="metric-value" id="avgResolutionTime">0</div>
-                            <div class="metric-label">Avg Resolution Time (days)</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-value" id="resolutionRate">0%</div>
-                            <div class="metric-label">Resolution Rate</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-value" id="citizenSatisfaction">0%</div>
-                            <div class="metric-label">Citizen Satisfaction</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Team Management Section -->
-        <section class="content-section" id="team-section">
-            <div class="section-header">
-                <h2>Team Management</h2>
-                <div class="section-actions">
-                    <button class="action-btn primary">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M20 8V14M23 11H17M12.5 7C12.5 9.20914 10.7091 11 8.5 11C6.29086 11 4.5 9.20914 4.5 7C4.5 4.79086 6.29086 3 8.5 3C10.7091 3 12.5 4.79086 12.5 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        Add Team Member
-                    </button>
-                </div>
-            </div>
-            <div class="team-grid" id="teamGrid">
-                <!-- Dynamic content will be loaded here -->
-            </div>
-        </section>
-    </main>
-
-    <!-- Modal for Complaint Details -->
-    <div class="modal-overlay" id="complaintModal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Complaint Details</h3>
-                <button class="modal-close" onclick="closeModal()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Dynamic content -->
-            </div>
-            <div class="modal-footer">
-                <button class="action-btn secondary" onclick="closeModal()">Close</button>
-                <button class="action-btn primary" id="modalActionBtn">Update Status</button>
-            </div>
+      </div>
+      
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h3>Complaint Statistics</h3>
+          <div class="chart-container" id="complaintsChart">
+            <!-- Chart will be loaded here -->
+          </div>
         </div>
+        
+        <div class="analytics-card">
+          <h3>Category Distribution</h3>
+          <div class="chart-container" id="categoryChart">
+            <!-- Chart will be loaded here -->
+          </div>
+        </div>
+        
+        <div class="analytics-card">
+          <h3>Resolution Timeline</h3>
+          <div class="chart-container" id="timelineChart">
+            <!-- Chart will be loaded here -->
+          </div>
+        </div>
+        
+        <div class="analytics-card">
+          <h3>Performance Metrics</h3>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <div class="metric-value" id="avgResolutionTime">0</div>
+              <div class="metric-label">Avg Resolution Time (days)</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value" id="resolutionRate">0%</div>
+              <div class="metric-label">Resolution Rate</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value" id="citizenSatisfaction">0%</div>
+              <div class="metric-label">Citizen Satisfaction</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Management Section -->
+    <section class="content-section" id="team-section">
+      <div class="section-header">
+        <h2>Team Management</h2>
+        <div class="section-actions">
+          <button class="action-btn">
+            <i class="fas fa-user-plus"></i>
+            <span>Add Team Member</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="team-grid" id="teamGrid">
+        <!-- Team Member 1 -->
+        <div class="team-card" style="background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(51, 65, 85, 0.3); border-radius: 16px; padding: 1.5rem; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden;">
+          <div class="team-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 600; color: white; margin: 0 auto 1rem; border: 3px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);">AK</div>
+          <div class="team-name" style="font-size: 1.125rem; font-weight: 600; color: #f8fafc; margin-bottom: 0.25rem;">Arjun Kumar</div>
+          <div class="team-role" style="color: #93c5fd; background: rgba(59, 130, 246, 0.1); padding: 0.25rem 0.75rem; border-radius: 12px; display: inline-block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem;">Senior Inspector</div>
+          <div class="team-email" style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 1rem;">arjun.kumar@civic.gov</div>
+          <div class="team-stats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">24</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Resolved</div>
+            </div>
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">8</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Pending</div>
+            </div>
+          </div>
+          <div class="team-actions" style="display: flex; gap: 0.5rem;">
+            <button class="action-btn secondary" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: none; border: 1px solid rgba(59, 130, 246, 0.5); color: #60a5fa; border-radius: 12px; cursor: pointer;">View</button>
+            <button class="action-btn" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 12px; cursor: pointer;">Contact</button>
+          </div>
+        </div>
+        
+        <!-- Team Member 2 -->
+        <div class="team-card" style="background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(51, 65, 85, 0.3); border-radius: 16px; padding: 1.5rem; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden;">
+          <div class="team-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 600; color: white; margin: 0 auto 1rem; border: 3px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);">PS</div>
+          <div class="team-name" style="font-size: 1.125rem; font-weight: 600; color: #f8fafc; margin-bottom: 0.25rem;">Priya Sharma</div>
+          <div class="team-role" style="color: #93c5fd; background: rgba(59, 130, 246, 0.1); padding: 0.25rem 0.75rem; border-radius: 12px; display: inline-block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem;">Field Coordinator</div>
+          <div class="team-email" style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 1rem;">priya.sharma@civic.gov</div>
+          <div class="team-stats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">18</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Resolved</div>
+            </div>
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">5</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Pending</div>
+            </div>
+          </div>
+          <div class="team-actions" style="display: flex; gap: 0.5rem;">
+            <button class="action-btn secondary" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: none; border: 1px solid rgba(59, 130, 246, 0.5); color: #60a5fa; border-radius: 12px; cursor: pointer;">View</button>
+            <button class="action-btn" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 12px; cursor: pointer;">Contact</button>
+          </div>
+        </div>
+        
+        <!-- Team Member 3 -->
+        <div class="team-card" style="background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(51, 65, 85, 0.3); border-radius: 16px; padding: 1.5rem; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden;">
+          <div class="team-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 600; color: white; margin: 0 auto 1rem; border: 3px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);">RG</div>
+          <div class="team-name" style="font-size: 1.125rem; font-weight: 600; color: #f8fafc; margin-bottom: 0.25rem;">Rajesh Gupta</div>
+          <div class="team-role" style="color: #93c5fd; background: rgba(59, 130, 246, 0.1); padding: 0.25rem 0.75rem; border-radius: 12px; display: inline-block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem;">Technical Lead</div>
+          <div class="team-email" style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 1rem;">rajesh.gupta@civic.gov</div>
+          <div class="team-stats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">31</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Resolved</div>
+            </div>
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">12</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Pending</div>
+            </div>
+          </div>
+          <div class="team-actions" style="display: flex; gap: 0.5rem;">
+            <button class="action-btn secondary" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: none; border: 1px solid rgba(59, 130, 246, 0.5); color: #60a5fa; border-radius: 12px; cursor: pointer;">View</button>
+            <button class="action-btn" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 12px; cursor: pointer;">Contact</button>
+          </div>
+        </div>
+        
+        <!-- Team Member 4 -->
+        <div class="team-card" style="background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(51, 65, 85, 0.3); border-radius: 16px; padding: 1.5rem; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden;">
+          <div class="team-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 600; color: white; margin: 0 auto 1rem; border: 3px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);">SM</div>
+          <div class="team-name" style="font-size: 1.125rem; font-weight: 600; color: #f8fafc; margin-bottom: 0.25rem;">Sneha Mehta</div>
+          <div class="team-role" style="color: #93c5fd; background: rgba(59, 130, 246, 0.1); padding: 0.25rem 0.75rem; border-radius: 12px; display: inline-block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem;">Quality Analyst</div>
+          <div class="team-email" style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 1rem;">sneha.mehta@civic.gov</div>
+          <div class="team-stats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">15</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Resolved</div>
+            </div>
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">3</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Pending</div>
+            </div>
+          </div>
+          <div class="team-actions" style="display: flex; gap: 0.5rem;">
+            <button class="action-btn secondary" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: none; border: 1px solid rgba(59, 130, 246, 0.5); color: #60a5fa; border-radius: 12px; cursor: pointer;">View</button>
+            <button class="action-btn" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 12px; cursor: pointer;">Contact</button>
+          </div>
+        </div>
+        
+        <!-- Team Member 5 -->
+        <div class="team-card" style="background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(51, 65, 85, 0.3); border-radius: 16px; padding: 1.5rem; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden;">
+          <div class="team-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 600; color: white; margin: 0 auto 1rem; border: 3px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);">VT</div>
+          <div class="team-name" style="font-size: 1.125rem; font-weight: 600; color: #f8fafc; margin-bottom: 0.25rem;">Vikram Thakur</div>
+          <div class="team-role" style="color: #93c5fd; background: rgba(59, 130, 246, 0.1); padding: 0.25rem 0.75rem; border-radius: 12px; display: inline-block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem;">Operations Manager</div>
+          <div class="team-email" style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 1rem;">vikram.thakur@civic.gov</div>
+          <div class="team-stats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">27</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Resolved</div>
+            </div>
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">9</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Pending</div>
+            </div>
+          </div>
+          <div class="team-actions" style="display: flex; gap: 0.5rem;">
+            <button class="action-btn secondary" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: none; border: 1px solid rgba(59, 130, 246, 0.5); color: #60a5fa; border-radius: 12px; cursor: pointer;">View</button>
+            <button class="action-btn" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 12px; cursor: pointer;">Contact</button>
+          </div>
+        </div>
+        
+        <!-- Team Member 6 - Electrical Specialist -->
+        <div class="team-card" style="background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(51, 65, 85, 0.3); border-radius: 16px; padding: 1.5rem; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden;">
+          <div class="team-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 600; color: white; margin: 0 auto 1rem; border: 3px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);">AS</div>
+          <div class="team-name" style="font-size: 1.125rem; font-weight: 600; color: #f8fafc; margin-bottom: 0.25rem;">Amit Singh</div>
+          <div class="team-role" style="color: #93c5fd; background: rgba(59, 130, 246, 0.1); padding: 0.25rem 0.75rem; border-radius: 12px; display: inline-block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem;">Electrical Specialist</div>
+          <div class="team-email" style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 1rem;">amit.singh@civic.gov</div>
+          <div class="team-stats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">19</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Resolved</div>
+            </div>
+            <div class="team-stat" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.15); transition: all 0.3s ease;">
+              <div class="team-stat-value" style="font-size: 1.25rem; font-weight: 600; color: #60a5fa;">4</div>
+              <div class="team-stat-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Pending</div>
+            </div>
+          </div>
+          <div class="team-actions" style="display: flex; gap: 0.5rem;">
+            <button class="action-btn secondary" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: none; border: 1px solid rgba(59, 130, 246, 0.5); color: #60a5fa; border-radius: 12px; cursor: pointer;">View</button>
+            <button class="action-btn" style="flex: 1; font-size: 0.875rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 12px; cursor: pointer;">Contact</button>
+          </div>
+        </div>
+      </div>
+    </section>
+</main>
+
+<!-- Modal for Complaint Details -->
+<div class="modal-overlay" id="complaintModal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Complaint Details</h3>
+      <button class="modal-close" onclick="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
+    <div class="modal-body" id="modalBody">
+      <!-- Dynamic content -->
+    </div>
+    <div class="modal-footer">
+      <button class="action-btn secondary" onclick="closeModal()">Close</button>
+      <button class="action-btn" id="modalActionBtn">Update Status</button>
+    </div>
+  </div>
+</div>
 
-  {% block extra_js %}
-  <script src="{% static 'js/authority.js' %}"></script>
-  {% endblock %}
+<!-- Fullscreen Map Modal -->
+<div class="fullscreen-modal" id="fullscreenModal">
+  <div class="fullscreen-header">
+    <h3>Complaints Map - Full View</h3>
+    <button class="close-fullscreen" onclick="closeFullscreen()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div id="fullscreenMap" class="fullscreen-map"></div>
+</div>
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'js/welcome.js' %}"></script>
+<script src="{% static 'js/authority.js' %}"></script>
+{% endblock %}
 {% endblock %}

@@ -1,449 +1,471 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %}Welcome - CivicFix{% endblock %}
-{% block body_class %}welcome-page{% endblock %}
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/welcome.css' %}">
-{% endblock %}
+  {% extends 'base.html' %}
+  {% load static %}
+  {% block title %}Welcome - CivicFix{% endblock %}
+  {% block body_class %}welcome-page{% endblock %}
+  {% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/welcome.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  {% endblock %}
 
-{% block content %}
-  <section class="welcome-hero mb-4">
-    <div class="container py-4">
-      <h1 class="display-6 mb-2">Hello, {{ request.user.first_name|default:request.user.username }} 👋</h1>
-      <p class="lead mb-4">Welcome to CivicFix. Use the dashboard to access your tool<a class="btn btn-light btn-lg text-primary" href="{% if request.user.role == 'citizen' %}{% url 'dashboard_citizen' %}{% elif request.user.role == 'authority' %}{% url 'dashboard_authority' %}{% else %}{% url 'dashboard_admin' %}{% endif %}">
-        EXPLOREs and manage your tasks.</p>
-      
-      </a>
+  {% block content %}
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="bg-shapes">
+      <div class="shape-1"></div>
+      <div class="shape-2"></div>
+      <div class="shape-3"></div>
+      <div class="shape-4"></div>
+      <div class="shape-5"></div>
+      <div class="shape-6"></div>
     </div>
-  </section>
+  </div>
 
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - CivicFix</title>
-    <link rel="stylesheet" href="about.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <!-- Background Animation -->
-    <div class="background-animation">
-        <div class="floating-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-            <div class="shape shape-4"></div>
-        </div>
-    </div>
-
-   
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-video-bg">
-            <video autoplay muted loop>
-                <source src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0fd273d2c6d9a064f3ae35579b2bbdf&profile_id=139&oauth2_token_id=57447761" type="video/mp4">
-            </video>
-            <div class="hero-overlay"></div>
-        </div>
+  <!-- Hero Welcome Section -->
+  <section class="hero-welcome">
+    <div class="container">
+      <div class="hero-grid">
         <div class="hero-content">
-            <h1 class="hero-title">About CivicFix</h1>
-            <p class="hero-subtitle">Empowering citizens to report, track, and resolve civic issues together</p>
-            <button class="cta-button" onclick="scrollToSection('mission')">
-                <span>Join the Movement</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"/>
-                </svg>
-            </button>
-            <div class="hero-features">
-                <div class="feature-item">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    <span>Report Issues Instantly</span>
-                </div>
-                <div class="feature-item">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 3v5h5M3 21l6-6M21 3a9 9 0 1 1-9 9" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    <span>Track Progress in Real-Time</span>
-                </div>
-                <div class="feature-item">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    <span>Connect with Community</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Mission Section -->
-    <section class="mission-section" id="mission">
-        <div class="container">
-            <div class="mission-card">
-                <div class="mission-content">
-                    <h2 class="section-title">Our Mission</h2>
-                    <p class="mission-text">
-                        CivicFix is dedicated to building smarter, safer, and more responsive cities by bridging the gap between citizens and authorities. Through transparent reporting, real-time updates, and community engagement, we ensure every voice is heard and every issue is addressed effectively. We leverage cutting-edge technology to empower citizens, strengthen collaboration with local governments, and create lasting positive change in communities worldwide.
-                    </p>
-                </div>
-                <div class="mission-visual">
-                    <div class="before-after-container">
-                        <div class="before-image">
-                            <img src="https://as1.ftcdn.net/v2/jpg/06/36/03/32/1000_F_636033266_UpSuAT1yvLTSV3JkQPEkQ6tTWWY9kP9c.jpg" alt="Before - Urban Challenges">
-                            <div class="image-label">Before – Urban Challenges</div>
-                        </div>
-                        <div class="after-image">
-                            <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop" alt="After - Smarter Solutions">
-                            <div class="image-label">After – Smarter Solutions</div>
-                        </div>
-                        <div class="slider" id="beforeAfterSlider"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How It Works Section -->
-    <section class="how-it-works-section">
-        <div class="container">
-            <h2 class="section-title">How It Works</h2>
-            <div class="steps-grid">
-                <div class="step-card" data-step="1">
-                    <div class="step-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/>
-                            <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                    </div>
-                    <h3 class="step-title">Report Issues</h3>
-                    <p class="step-description">Capture and report civic problems with photos and location details</p>
-                </div>
-                
-                <div class="step-card" data-step="2">
-                    <div class="step-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <path d="M3 3v5h5M3 21l6-6M21 3a9 9 0 1 1-9 9" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                    </div>
-                    <h3 class="step-title">Track Progress</h3>
-                    <p class="step-description">Monitor real-time updates and status changes on your reports</p>
-                </div>
-                
-                <div class="step-card" data-step="3">
-                    <div class="step-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <path d="M14 9V5a3 3 0 0 0-6 0v4M3 9h18l-1 10H4L3 9z" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                    </div>
-                    <h3 class="step-title">Community Voting</h3>
-                    <p class="step-description">Upvote important issues to prioritize community concerns</p>
-                </div>
-                
-                <div class="step-card" data-step="4">
-                    <div class="step-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                    </div>
-                    <h3 class="step-title">Authorities Respond</h3>
-                    <p class="step-description">Government agencies take action and provide status updates</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Impact Section -->
-    <section class="impact-section">
-        <div class="impact-video-bg">
-            <video autoplay muted loop>
-                <source src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0fd273d2c6d9a064f3ae35579b2bbdf&profile_id=139&oauth2_token_id=57447761" type="video/mp4">
-            </video>
-            <div class="impact-overlay"></div>
-        </div>
-        <div class="container">
-            <h2 class="section-title">Our Impact</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" data-target="15247">15.2K+</div>
-                    <div class="stat-label">Issues Reported</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-target="12890">12.9K+</div>
-                    <div class="stat-label">Resolved Problems</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-target="25">25+</div>
-                    <div class="stat-label">Partner Municipalities</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-target="89500">89.5K+</div>
-                    <div class="stat-label">Active Users</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Team Section -->
-    <section class="team-section">
-        <div class="container">
-            <h2 class="section-title">Meet Our Team</h2>
-            <div class="team-grid">
-                <div class="team-card">
-                    <div class="team-card-inner">
-                        <div class="team-card-front">
-                            <div class="team-photo">
-                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&face=center" alt="John Doe">
-                            </div>
-                            <h3 class="team-name">Abhishek Kumar</h3>
-                            <p class="team-role">Backend Developer</p>
-                        </div>
-                        <div class="team-card-back">
-                            <p class="team-bio">Passionate about civic technology and urban planning. 10+ years experience in public administration.</p>
-                            <div class="social-links">
-                                <a href="#" class="social-link">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" stroke-width="2"/>
-                                        <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="2"/>
-                                        <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                </a>
-                                <a href="#" class="social-link">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <div class="team-card-inner">
-                        <div class="team-card-front">
-                            <div class="team-photo">
-                                <img src="https://assets.entrepreneur.com/content/3x2/2000/20160628101609-Coding.jpeg?format=pjeg&auto=webp" alt="Sarah Johnson">
-                            </div>
-                            <h3 class="team-name">Samar Singh</h3>
-                            <p class="team-role">Frontend Developer</p>
-                        </div>
-                        <div class="team-card-back">
-                            <p class="team-bio">Full-stack developer with expertise in civic tech solutions and mobile app development.</p>
-                            <div class="social-links">
-                                <a href="#" class="social-link">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" stroke-width="2"/>
-                                        <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="2"/>
-                                        <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                </a>
-                                <a href="#" class="social-link">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <div class="team-card-inner">
-                        <div class="team-card-front">
-                            <div class="team-photo">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&face=center" alt="Mike Chen">
-                            </div>
-                            <h3 class="team-name">Priyanshu</h3>
-                            <p class="team-role">UX Designer</p>
-                        </div>
-                        <div class="team-card-back">
-                            <p class="team-bio">Design thinking expert focused on creating intuitive user experiences for civic engagement platforms.</p>
-                            <div class="social-links">
-                                <a href="#" class="social-link">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" stroke-width="2"/>
-                                        <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="2"/>
-                                        <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                </a>
-                                <a href="#" class="social-link">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                                        <path d="M8 21l4-7 4 7" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <div class="team-card-inner">
-                        <div class="team-card-front">
-                            <div class="team-photo">
-                                <img src="https://png.pngtree.com/png-vector/20240805/ourmid/pngtree-freelancer-software-developer-programmer-coder-illustrator-png-image_13076689.png" alt="Lisa Wang">
-                            </div>
-                            <h3 class="team-name">Ankit Kumar</h3>
-                            <p class="team-role">Community Manager</p>
-                        </div>
-                        <div class="team-card-back">
-                            <p class="team-bio">Community engagement specialist with background in local government and citizen advocacy.</p>
-                            <div class="social-links">
-                                <a href="#" class="social-link">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" stroke-width="2"/>
-                                        <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="2"/>
-                                        <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                </a>
-                                <a href="#" class="social-link">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="testimonials-section">
-        <div class="container">
-            <h2 class="section-title">Community Stories</h2>
-            <div class="testimonials-carousel" id="testimonialsCarousel">
-                <div class="testimonial-slide active">
-                    <div class="testimonial-content">
-                        <div class="testimonial-photo">
-                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&face=center" alt="Alex Rodriguez">
-                        </div>
-                        <blockquote class="testimonial-quote">
-                            "CivicFix helped me report a dangerous pothole that was damaging cars. It was fixed within a week!"
-                        </blockquote>
-                        <cite class="testimonial-author">Aditya Aman, Local Resident</cite>
-                    </div>
-                </div>
-                
-                <div class="testimonial-slide">
-                    <div class="testimonial-content">
-                        <div class="testimonial-photo">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&face=center" alt="Maria Santos">
-                        </div>
-                        <blockquote class="testimonial-quote">
-                            "The transparency and real-time updates make me feel heard by my local government."
-                        </blockquote>
-                        <cite class="testimonial-author">Maria Santos, Community Activist</cite>
-                    </div>
-                </div>
-                
-                <div class="testimonial-slide">
-                    <div class="testimonial-content">
-                        <div class="testimonial-photo">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&face=center" alt="David Kim">
-                        </div>
-                        <blockquote class="testimonial-quote">
-                            "As a city official, CivicFix helps us prioritize issues based on community needs."
-                        </blockquote>
-                        <cite class="testimonial-author">David Kim, City Council Member</cite>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-indicators">
-                <button class="indicator active" data-slide="0"></button>
-                <button class="indicator" data-slide="1"></button>
-                <button class="indicator" data-slide="2"></button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Final CTA Section -->
-    <section class="final-cta-section">
-        <div class="parallax-bg">
-            <div class="parallax-overlay"></div>
-        </div>
-        <div class="cta-content">
-            <h2 class="cta-title">Together, let's build smarter and cleaner cities</h2>
-            <p class="cta-subtitle">Join thousands of citizens making a difference in their communities</p>
-            <button class="cta-button-large" onclick="window.location.href='signup.html'">
-               <a class="cta-button-large btn btn-light btn-lg text-primary" 
-                    href="{% if request.user.role == 'citizen' %}
-                                {% url 'dashboard_citizen' %}
-                            {% elif request.user.role == 'authority' %}
-                                {% url 'dashboard_authority' %}
-                            {% else %}
-                                {% url 'dashboard_admin' %}
-                            {% endif %}">
-                            <span>Get Started Today</span>
-                            <div class="ripple-effect"></div>
-</a>
-
-            </button>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="currentColor"/>
-                    </svg>
-                    <span>CivicFix</span>
-                </div>
-                <p class="footer-text">Building better communities through technology</p>
-                <div class="footer-links">
-                    <a href="#" class="footer-link">Privacy Policy</a>
-                    <a href="#" class="footer-link">Terms of Service</a>
-                    <a href="#" class="footer-link">Contact</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-   {% block extra_js %}
-<script src="{% static 'js/welcome.js' %}"></script>
-{% endblock %}
-</body>
-
-
-
-
-  <div class="welcome-divider"></div>
-
-  <section class="welcome-cards">
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Your Role</h5>
-            <p class="card-text text-capitalize mb-0">{{ request.user.role }}</p>
+          <div class="welcome-badge">
+            <i class="fas fa-star"></i>
+            <span>Welcome Back</span>
           </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Quick Links</h5>
-            <ul class="list-unstyled mb-0">
-              <li><a href="{% url 'home' %}">Home</a></li>
-              <li><a href="/about/">About</a></li>
-              <li><a href="{% url 'logout' %}">Logout</a></li>
-            </ul>
+          <h1 class="hero-title">
+            Hello, <span class="user-name">{{ request.user.first_name|default:request.user.username }}</span> 👋
+          </h1>
+          <p class="hero-subtitle">
+                Ready to make a difference in your community? Your CivicFix dashboard awaits with powerful tools for civic engagement and community improvement.
+          </p>
+          <div class="hero-features">
+            <div class="feature-item">
+              <i class="fas fa-chart-line"></i>
+              <span>Track Your Impact</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-users"></i>
+              <span>Community Network</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-bell"></i>
+              <span>Real-time Updates</span>
+            </div>
           </div>
+          <div class="hero-actions">
+            <a href="{% if request.user.role == 'citizen' %}{% url 'dashboard_citizen' %}{% elif request.user.role == 'authority' %}{% url 'dashboard_authority' %}{% else %}{% url 'dashboard_admin' %}{% endif %}" class="primary-btn">
+              <i class="fas fa-rocket"></i>
+              <span>Launch Dashboard</span>
+            </a>
+            <a href="{% url 'home' %}" class="secondary-btn">
+              <i class="fas fa-home"></i>
+              <span>Back to Home</span>
+            </a>
+          </div>
+          
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Next steps</h5>
-            <p class="card-text mb-0">Enter the EXPLORE button to start working with your assigned tools.</p>
+        <div class="hero-visual">
+          <div class="hero-image-container">
+            <div class="main-visual">
+              <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop" alt="Civic Engagement Platform" class="hero-image">
+              <div class="visual-overlay"></div>
+            </div>
+            <div class="floating-cards">
+              <div class="floating-card card-1">
+                <div class="card-icon">
+                  <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="card-content">
+                  <span class="card-title">Issue Reported</span>
+                  <span class="card-subtitle">Pothole on Main St</span>
+                </div>
+              </div>
+              <div class="floating-card card-2">
+                <div class="card-icon">
+                  <i class="fas fa-tools"></i>
+                </div>
+                <div class="card-content">
+                  <span class="card-title">In Progress</span>
+                  <span class="card-subtitle">Repair scheduled</span>
+                </div>
+              </div>
+              <div class="floating-card card-3">
+                <div class="card-icon">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="card-content">
+                  <span class="card-title">Resolved</span>
+                  <span class="card-subtitle">Issue fixed!</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-{% endblock %}
+  
+
+  <!-- Mission Showcase -->
+  <section class="mission-showcase">
+    <div class="container">
+      <div class="showcase-grid">
+        <div class="showcase-content">
+          <div class="section-tag">Our Mission</div>
+          <h2 class="showcase-title">Building Smarter Cities Together</h2>
+          <p class="showcase-text">
+            CivicFix bridges the gap between citizens and authorities through transparent reporting, real-time updates, and community engagement. We leverage cutting-edge technology to empower citizens, strengthen collaboration with local governments, and create lasting positive change in communities worldwide.
+          </p>
+          <div class="mission-features">
+            <div class="feature">
+              <i class="fas fa-users"></i>
+              <span>Community Driven</span>
+            </div>
+            <div class="feature">
+              <i class="fas fa-eye"></i>
+              <span>Transparent Process</span>
+            </div>
+            <div class="feature">
+              <i class="fas fa-bolt"></i>
+              <span>Real-time Updates</span>
+            </div>
+          </div>
+        </div>
+        <div class="showcase-visual">
+          <div class="visual-container">
+            <div class="before-after-container">
+              <div class="before-image">
+                <img src="https://as1.ftcdn.net/v2/jpg/06/36/03/32/1000_F_636033266_UpSuAT1yvLTSV3JkQPEkQ6tTWWY9kP9c.jpg" alt="Before - Urban Challenges">
+                <div class="image-label">Before – Urban Challenges</div>
+              </div>
+              <div class="after-image">
+                <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop" alt="After - Smarter Solutions">
+                <div class="image-label">After – Smarter Solutions</div>
+              </div>
+              <div class="slider" id="beforeAfterSlider"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process Flow -->
+  <section class="process-flow">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">How It Works</div>
+        <h2 class="section-title">Simple Steps, Powerful Results</h2>
+      </div>
+      <div class="flow-container">
+        <div class="flow-step">
+          <div class="step-visual">
+            <div class="step-circle">
+              <i class="fas fa-camera"></i>
+            </div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h3>Report Issues</h3>
+            <p>Capture and report civic problems with photos and location details</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-visual">
+            <div class="step-circle">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h3>Track Progress</h3>
+            <p>Monitor real-time updates and status changes on your reports</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-visual">
+            <div class="step-circle">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h3>Community Voting</h3>
+            <p>Upvote important issues to prioritize community concerns</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-visual">
+            <div class="step-circle">
+              <i class="fas fa-check"></i>
+            </div>
+          </div>
+          <div class="step-content">
+            <h3>Get Results</h3>
+            <p>Authorities respond and provide transparent status updates</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact Dashboard -->
+  <section class="impact-dashboard">
+    <div class="container">
+      <div class="dashboard-header">
+        <div class="section-tag">Our Impact</div>
+        <h2 class="section-title">Real Results, Real Change</h2>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-card primary">
+          <div class="metric-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="metric-value">15.2K+</div>
+          <div class="metric-label">Issues Reported</div>
+        </div>
+        <div class="metric-card success">
+          <div class="metric-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="metric-value">12.9K+</div>
+          <div class="metric-label">Problems Solved</div>
+        </div>
+        <div class="metric-card info">
+          <div class="metric-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="metric-value">89.5K+</div>
+          <div class="metric-label">Active Citizens</div>
+        </div>
+        <div class="metric-card warning">
+          <div class="metric-icon">
+            <i class="fas fa-city"></i>
+          </div>
+          <div class="metric-value">50+</div>
+          <div class="metric-label">Partner Cities</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Spotlight -->
+  <section class="team-spotlight">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Our Team</div>
+        <h2 class="section-title">Meet the Innovators</h2>
+      </div>
+      <div class="team-grid">
+        <div class="team-member">
+          <div class="member-card">
+                <div class="member-card-inner">
+              <div class="member-card-front">
+                <div class="member-image">
+                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&face=center" alt="Abhishek Kumar">
+                </div>
+                <h3>Abhishek Kumar</h3>
+                <span class="member-role">Backend Developer</span>
+              </div>
+              <div class="member-card-back">
+                <p class="member-bio">Passionate about civic technology and urban planning with 10+ years experience in public administration.</p>
+                <div class="member-social">
+                  <a href="#"><i class="fab fa-linkedin"></i></a>
+                  <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="team-member">
+          <div class="member-card">
+            <div class="member-card-inner">
+              <div class="member-card-front">
+                <div class="member-image">
+                  <img src="https://assets.entrepreneur.com/content/3x2/2000/20160628101609-Coding.jpeg?format=pjeg&auto=webp" alt="Samar Singh">
+                </div>
+                <h3>Samar Singh</h3>
+                <span class="member-role">Frontend Developer</span>
+              </div>
+              <div class="member-card-back">
+                <p class="member-bio">Full-stack developer with expertise in civic tech solutions and mobile app development.</p>
+                <div class="member-social">
+                  <a href="#"><i class="fab fa-linkedin"></i></a>
+                  <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="team-member">
+          <div class="member-card">
+            <div class="member-card-inner">
+              <div class="member-card-front">
+                <div class="member-image">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&face=center" alt="Priyanshu">
+                </div>
+                <h3>Priyanshu</h3>
+                <span class="member-role">UX Designer</span>
+              </div>
+              <div class="member-card-back">
+                <p class="member-bio">Design thinking expert focused on creating intuitive user experiences for civic engagement platforms.</p>
+                <div class="member-social">
+                  <a href="#"><i class="fab fa-linkedin"></i></a>
+                  <a href="#"><i class="fab fa-dribbble"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="team-member">
+          <div class="member-card">
+            <div class="member-card-inner">
+              <div class="member-card-front">
+                <div class="member-image">
+                  <img src="https://png.pngtree.com/png-vector/20240805/ourmid/pngtree-freelancer-software-developer-programmer-coder-illustrator-png-image_13076689.png" alt="Ankit Kumar">
+                </div>
+                <h3>Ankit Kumar</h3>
+                <span class="member-role">Community Manager</span>
+              </div>
+              <div class="member-card-back">
+                <p class="member-bio">Community engagement specialist with background in local government and citizen advocacy.</p>
+                <div class="member-social">
+                  <a href="#"><i class="fab fa-linkedin"></i></a>
+                  <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+              </div>
+      </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Stories -->
+  <section class="community-stories">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Success Stories</div>
+        <h2 class="section-title">What Citizens Say</h2>
+      </div>
+      <div class="stories-carousel">
+        <div class="story-card active">
+          <div class="story-content">
+            <div class="quote-icon">
+              <i class="fas fa-quote-left"></i>
+            </div>
+            <p class="story-text">
+              "CivicFix helped me report a dangerous pothole that was damaging cars. It was fixed within a week!"
+            </p>
+            <div class="story-author">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop&face=center" alt="Aditya Aman">
+              <div class="author-info">
+                <span class="author-name">Aditya Aman</span>
+                <span class="author-title">Local Resident</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-content">
+            <div class="quote-icon">
+              <i class="fas fa-quote-left"></i>
+            </div>
+            <p class="story-text">
+              "The transparency and real-time updates make me feel heard by my local government."
+            </p>
+            <div class="story-author">
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=60&h=60&fit=crop&face=center" alt="Maria Santos">
+              <div class="author-info">
+                <span class="author-name">Maria Santos</span>
+                <span class="author-title">Community Activist</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-content">
+            <div class="quote-icon">
+              <i class="fas fa-quote-left"></i>
+            </div>
+            <p class="story-text">
+              "As a city official, CivicFix helps us prioritize issues based on community needs."
+            </p>
+            <div class="story-author">
+              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&face=center" alt="David Kim">
+              <div class="author-info">
+                <span class="author-name">David Kim</span>
+                <span class="author-title">City Council Member</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-dots">
+        <button class="dot active" data-slide="0"></button>
+        <button class="dot" data-slide="1"></button>
+        <button class="dot" data-slide="2"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="final-cta">
+    <div class="container">
+      <div class="cta-content">
+        <div class="cta-badge">
+          <i class="fas fa-rocket"></i>
+          <span>Start Your Journey</span>
+        </div>
+        <h2 class="cta-title">Ready to Transform Your Community?</h2>
+        <p class="cta-subtitle">Join thousands of citizens making a real difference in their neighborhoods. Your voice matters, and together we can build better cities.</p>
+        
+        <div class="cta-features">
+          <div class="cta-feature">
+            <i class="fas fa-mobile-alt"></i>
+            <span>Mobile Ready</span>
+          </div>
+          <div class="cta-feature">
+            <i class="fas fa-shield-alt"></i>
+            <span>Secure Platform</span>
+          </div>
+          <div class="cta-feature">
+            <i class="fas fa-clock"></i>
+            <span>Real-time Updates</span>
+          </div>
+        </div>
+        
+        <div class="cta-actions">
+          <a href="{% if request.user.role == 'citizen' %}{% url 'dashboard_citizen' %}{% elif request.user.role == 'authority' %}{% url 'dashboard_authority' %}{% else %}{% url 'dashboard_admin' %}{% endif %}" class="cta-button primary">
+            <span>Launch Dashboard</span>
+            <i class="fas fa-rocket"></i>
+          </a>
+          <a href="{% url 'home' %}" class="cta-button secondary">
+            <span>Explore Features</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        
+        <div class="cta-stats">
+          <div class="cta-stat">
+            <span class="stat-number">15.2K+</span>
+            <span class="stat-text">Issues Resolved</span>
+          </div>
+          <div class="cta-stat">
+            <span class="stat-number">89.5K+</span>
+            <span class="stat-text">Active Users</span>
+          </div>
+          <div class="cta-stat">
+            <span class="stat-number">50+</span>
+            <span class="stat-text">Cities Served</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+    
+    
+  </footer>
+
+  {% block extra_js %}
+  <script src="{% static 'js/welcome.js' %}"></script>
+  {% endblock %}
+  {% endblock %}

@@ -1,5 +1,11 @@
 // Authority Dashboard JavaScript - Professional Interactive Dashboard
 
+// Map variables
+let map, fullscreenMap;
+let mapMarkers = [];
+let fullscreenMarkers = [];
+const MIN_ZOOM_LEVEL = 13;
+
 // Sample Data for Authority Dashboard
 const assignedComplaints = [
     {
@@ -158,6 +164,7 @@ const mobileOverlay = document.getElementById('mobileOverlay');
 // Initialize Dashboard
 function initDashboard() {
     initNavigation();
+    initMap();
     loadAssignedComplaints();
     setupEventListeners();
 }
@@ -194,21 +201,30 @@ function initNavigation() {
 function switchSection(sectionName) {
     const currentSection = document.querySelector('.content-section.active');
     const targetSection = document.getElementById(`${sectionName}-section`);
+    const navTabs = document.querySelectorAll('.nav-tab');
     
     if (!targetSection || currentSection === targetSection) return;
     
-    // Fade out current section
+    // Update nav tab active state
+    navTabs.forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.onclick && tab.onclick.toString().includes(sectionName)) {
+            tab.classList.add('active');
+        }
+    });
+    
+    // Fade out current section with enhanced animation
     currentSection.style.opacity = '0';
-    currentSection.style.transform = 'translateY(-20px)';
+    currentSection.style.transform = 'translateY(-20px) scale(0.98)';
     
     setTimeout(() => {
         currentSection.classList.remove('active');
         targetSection.classList.add('active');
         
-        // Fade in new section
+        // Fade in new section with enhanced animation
         setTimeout(() => {
             targetSection.style.opacity = '1';
-            targetSection.style.transform = 'translateY(0)';
+            targetSection.style.transform = 'translateY(0) scale(1)';
             
             // Load section-specific content
             loadSectionContent(sectionName);
@@ -292,6 +308,7 @@ function renderComplaintsGrid(complaints, container) {
                     </button>`
                 }
                 <button class="action-btn secondary" onclick="openComplaintModal('${complaint.id}', event)">
+                    <i class="fas fa-eye"></i>
                     View Details
                 </button>
             </div>
@@ -330,102 +347,94 @@ function createCharts() {
 }
 
 function createComplaintsChart() {
-    const canvas = document.getElementById('complaintsChart');
-    if (!canvas) return;
+    const container = document.getElementById('complaintsChart');
+    if (!container) return;
     
-    const container = canvas.parentElement;
     container.innerHTML = `
-        <div class="chart-placeholder">
-            <div style="display: flex; justify-content: space-around; align-items: end; height: 150px; padding: 20px;">
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <div style="width: 40px; height: ${(analyticsData.totalComplaints / 200) * 100}px; background: #3b82f6; margin-bottom: 10px; border-radius: 4px;"></div>
-                    <span style="font-size: 12px; color: rgba(255,255,255,0.7);">Total</span>
-                    <span style="font-size: 14px; font-weight: 600; color: white;">${analyticsData.totalComplaints}</span>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <div style="width: 40px; height: ${(analyticsData.pendingComplaints / 200) * 100}px; background: #f59e0b; margin-bottom: 10px; border-radius: 4px;"></div>
-                    <span style="font-size: 12px; color: rgba(255,255,255,0.7);">Pending</span>
-                    <span style="font-size: 14px; font-weight: 600; color: white;">${analyticsData.pendingComplaints}</span>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <div style="width: 40px; height: ${(analyticsData.inProgressComplaints / 200) * 100}px; background: #60a5fa; margin-bottom: 10px; border-radius: 4px;"></div>
-                    <span style="font-size: 12px; color: rgba(255,255,255,0.7);">Progress</span>
-                    <span style="font-size: 14px; font-weight: 600; color: white;">${analyticsData.inProgressComplaints}</span>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <div style="width: 40px; height: ${(analyticsData.resolvedComplaints / 200) * 100}px; background: #10b981; margin-bottom: 10px; border-radius: 4px;"></div>
-                    <span style="font-size: 12px; color: rgba(255,255,255,0.7);">Resolved</span>
-                    <span style="font-size: 14px; font-weight: 600; color: white;">${analyticsData.resolvedComplaints}</span>
-                </div>
+        <div style="display: flex; justify-content: space-around; align-items: end; height: 120px; padding: 15px; width: 100%;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <div style="width: 40px; height: ${Math.max((analyticsData.totalComplaints / 200) * 80, 20)}px; background: #3b82f6; border-radius: 6px;"></div>
+                <span style="font-size: 11px; color: #1e293b; font-weight: 600;">Total</span>
+                <span style="font-size: 14px; font-weight: 700; color: #1e293b;">${analyticsData.totalComplaints}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <div style="width: 40px; height: ${Math.max((analyticsData.pendingComplaints / 200) * 80, 20)}px; background: #f59e0b; border-radius: 6px;"></div>
+                <span style="font-size: 11px; color: #1e293b; font-weight: 600;">Pending</span>
+                <span style="font-size: 14px; font-weight: 700; color: #1e293b;">${analyticsData.pendingComplaints}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <div style="width: 40px; height: ${Math.max((analyticsData.inProgressComplaints / 200) * 80, 20)}px; background: #60a5fa; border-radius: 6px;"></div>
+                <span style="font-size: 11px; color: #1e293b; font-weight: 600;">Progress</span>
+                <span style="font-size: 14px; font-weight: 700; color: #1e293b;">${analyticsData.inProgressComplaints}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <div style="width: 40px; height: ${Math.max((analyticsData.resolvedComplaints / 200) * 80, 20)}px; background: #10b981; border-radius: 6px;"></div>
+                <span style="font-size: 11px; color: #1e293b; font-weight: 600;">Resolved</span>
+                <span style="font-size: 14px; font-weight: 700; color: #1e293b;">${analyticsData.resolvedComplaints}</span>
             </div>
         </div>
     `;
 }
 
 function createCategoryChart() {
-    const canvas = document.getElementById('categoryChart');
-    if (!canvas) return;
+    const container = document.getElementById('categoryChart');
+    if (!container) return;
     
-    const container = canvas.parentElement;
     const categories = ['roads', 'lights', 'garbage', 'water', 'maintenance'];
     const counts = [35, 28, 31, 22, 40];
+    const colors = ['#ff6600', '#003366', '#10b981', '#ff6600', '#003366'];
     const total = counts.reduce((a, b) => a + b, 0);
     
     container.innerHTML = `
-        <div class="chart-placeholder">
-            <div style="display: flex; flex-direction: column; gap: 15px; padding: 20px;">
-                ${categories.map((category, index) => {
-                    const percentage = Math.round((counts[index] / total) * 100);
-                    return `
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="display: flex; align-items: center; gap: 8px; min-width: 100px;">
-                                ${categoryIcons[category]}
-                                <span style="font-size: 12px; color: rgba(255,255,255,0.8); text-transform: capitalize;">${category}</span>
-                            </div>
-                            <div style="flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-                                <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); border-radius: 4px;"></div>
-                            </div>
-                            <span style="font-size: 12px; color: white; font-weight: 600; min-width: 40px;">${counts[index]}</span>
+        <div style="display: flex; flex-direction: column; gap: 15px; padding: 20px;">
+            ${categories.map((category, index) => {
+                const percentage = Math.round((counts[index] / total) * 100);
+                return `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px; min-width: 100px;">
+                            <div style="color: ${colors[index]}; font-size: 14px;">${categoryIcons[category]}</div>
+                            <span style="font-size: 12px; color: #1e293b; font-weight: 600; text-transform: capitalize;">${category}</span>
                         </div>
-                    `;
-                }).join('')}
-            </div>
+                        <div style="flex: 1; height: 10px; background: rgba(255, 102, 0, 0.1); border-radius: 5px; overflow: hidden;">
+                            <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, ${colors[index]}, ${colors[index]}dd); border-radius: 5px;"></div>
+                        </div>
+                        <span style="font-size: 12px; color: #1e293b; font-weight: 700; min-width: 40px;">${counts[index]}</span>
+                    </div>
+                `;
+            }).join('')}
         </div>
     `;
 }
 
 function createTimelineChart() {
-    const canvas = document.getElementById('timelineChart');
-    if (!canvas) return;
+    const container = document.getElementById('timelineChart');
+    if (!container) return;
     
-    const container = canvas.parentElement;
     const months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
     const complaints = [55, 49, 63, 58, 52, 47];
     const resolved = [47, 42, 54, 49, 44, 38];
     const maxValue = Math.max(...complaints, ...resolved);
     
     container.innerHTML = `
-        <div class="chart-placeholder">
-            <div style="display: flex; justify-content: space-between; align-items: end; height: 150px; padding: 20px;">
-                ${months.map((month, index) => `
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                        <div style="display: flex; gap: 2px; align-items: end;">
-                            <div style="width: 12px; height: ${(complaints[index] / maxValue) * 100}px; background: #f59e0b; border-radius: 2px;"></div>
-                            <div style="width: 12px; height: ${(resolved[index] / maxValue) * 100}px; background: #10b981; border-radius: 2px;"></div>
-                        </div>
-                        <span style="font-size: 10px; color: rgba(255,255,255,0.7);">${month}</span>
+        <div style="display: flex; justify-content: space-between; align-items: end; height: 150px; padding: 20px;">
+            ${months.map((month, index) => `
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                    <div style="display: flex; gap: 2px; align-items: end;">
+                        <div style="width: 12px; height: ${(complaints[index] / maxValue) * 100}px; background: #f59e0b; border-radius: 2px;"></div>
+                        <div style="width: 12px; height: ${(resolved[index] / maxValue) * 100}px; background: #10b981; border-radius: 2px;"></div>
                     </div>
-                `).join('')}
+                    <span style="font-size: 10px; color: #1e293b; font-weight: 600;">${month}</span>
+                </div>
+            `).join('')}
+        </div>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 2px;"></div>
+                <span style="font-size: 12px; color: #1e293b; font-weight: 600;">Complaints</span>
             </div>
-            <div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px;">
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 2px;"></div>
-                    <span style="font-size: 12px; color: rgba(255,255,255,0.7);">Complaints</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <div style="width: 12px; height: 12px; background: #10b981; border-radius: 2px;"></div>
-                    <span style="font-size: 12px; color: rgba(255,255,255,0.7);">Resolved</span>
-                </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 12px; height: 12px; background: #10b981; border-radius: 2px;"></div>
+                <span style="font-size: 12px; color: #1e293b; font-weight: 600;">Resolved</span>
             </div>
         </div>
     `;
@@ -505,13 +514,18 @@ function updateComplaintStatus(complaintId, newStatus, event) {
 }
 
 function filterComplaints() {
+    const categoryFilter = document.getElementById('categoryFilter');
     const priorityFilter = document.getElementById('priorityFilter');
     const statusFilter = document.getElementById('statusFilter');
     const container = document.getElementById('assignedComplaintsGrid');
     
-    if (!priorityFilter || !statusFilter || !container) return;
+    if (!categoryFilter || !priorityFilter || !statusFilter || !container) return;
     
     let filteredComplaints = assignedComplaints;
+    
+    if (categoryFilter.value !== 'all') {
+        filteredComplaints = filteredComplaints.filter(c => c.category === categoryFilter.value);
+    }
     
     if (priorityFilter.value !== 'all') {
         filteredComplaints = filteredComplaints.filter(c => c.priority === priorityFilter.value);
@@ -522,6 +536,12 @@ function filterComplaints() {
     }
     
     renderComplaintsGrid(filteredComplaints, container);
+    
+    // Update map markers
+    loadMapMarkers(filteredComplaints);
+    if (fullscreenMap) {
+        loadFullscreenMapMarkers(filteredComplaints);
+    }
 }
 
 function openComplaintModal(complaintId, event) {
@@ -573,6 +593,25 @@ function createRipple(element) {
     ripple.style.width = ripple.style.height = size + 'px';
     ripple.style.left = x + 'px';
     ripple.style.top = y + 'px';
+    ripple.classList.add('ripple');
+    
+    element.appendChild(ripple);
+    
+    setTimeout(() => {
+        ripple.remove();
+    }, 600);
+}
+
+function createTabRipple(element) {
+    const ripple = document.createElement('span');
+    const rect = element.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = '50%';
+    ripple.style.top = '50%';
+    ripple.style.transform = 'translate(-50%, -50%)';
+    ripple.style.background = 'rgba(255, 255, 255, 0.3)';
     ripple.classList.add('ripple');
     
     element.appendChild(ripple);
@@ -663,6 +702,136 @@ function viewMemberDetails(memberId) {
     }
 }
 
+// Map Functions
+function initMap() {
+    // Initialize main map
+    map = L.map('map').setView([22.580278, 88.458889], 14);
+    
+    // Add tile layer
+    L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=Vn3pvUHd7x3bXsgTTGKY', {
+        attribution: '© MapTiler © OpenStreetMap contributors',
+        maxZoom: 18
+    }).addTo(map);
+    
+    // Load initial markers after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        loadMapMarkers();
+    }, 100);
+}
+
+function loadMapMarkers(filteredComplaints = null) {
+    // Clear existing markers
+    mapMarkers.forEach(marker => map.removeLayer(marker));
+    mapMarkers = [];
+    
+    const complaintsToShow = filteredComplaints || assignedComplaints;
+    
+    // Update complaint count
+    const countElement = document.getElementById('mapComplaintCount');
+    if (countElement) {
+        countElement.textContent = `${complaintsToShow.length} complaint${complaintsToShow.length !== 1 ? 's' : ''} shown`;
+    }
+    
+    complaintsToShow.forEach(complaint => {
+        // Generate random coordinates around Kolkata for demo
+        const lat = 22.580278 + (Math.random() - 0.5) * 0.02;
+        const lng = 88.458889 + (Math.random() - 0.5) * 0.02;
+        
+        const color = complaint.priority === 'high' ? '#ef4444' : 
+                     complaint.priority === 'medium' ? '#f59e0b' : '#10b981';
+        
+        const icon = L.divIcon({
+            html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">!</div>`,
+            className: 'custom-div-icon',
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+        
+        const marker = L.marker([lat, lng], { icon }).addTo(map);
+        
+        marker.bindPopup(`
+            <div style="min-width: 200px; color: #f8fafc;">
+                <h6 class="mb-1" style="color: #f8fafc; margin-bottom: 8px;">${complaint.title}</h6>
+                <p class="mb-1" style="margin-bottom: 8px; font-size: 14px;">${complaint.description}</p>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="background: ${color}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${complaint.priority}</span>
+                    <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 12px; font-size: 11px;">${complaint.id}</span>
+                </div>
+                <small style="color: #cbd5e1;">Category: ${complaint.category.charAt(0).toUpperCase() + complaint.category.slice(1)}</small>
+            </div>
+        `);
+        
+        mapMarkers.push(marker);
+    });
+}
+
+function loadFullscreenMapMarkers(filteredComplaints = null) {
+    if (!fullscreenMap) return;
+    
+    // Clear existing markers
+    fullscreenMarkers.forEach(marker => fullscreenMap.removeLayer(marker));
+    fullscreenMarkers = [];
+    
+    const complaintsToShow = filteredComplaints || assignedComplaints;
+    
+    complaintsToShow.forEach(complaint => {
+        // Generate random coordinates around Kolkata for demo
+        const lat = 22.580278 + (Math.random() - 0.5) * 0.02;
+        const lng = 88.458889 + (Math.random() - 0.5) * 0.02;
+        
+        const color = complaint.priority === 'high' ? '#ef4444' : 
+                     complaint.priority === 'medium' ? '#f59e0b' : '#10b981';
+        
+        const icon = L.divIcon({
+            html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">!</div>`,
+            className: 'custom-div-icon',
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+        
+        const marker = L.marker([lat, lng], { icon }).addTo(fullscreenMap);
+        
+        marker.bindPopup(`
+            <div style="min-width: 200px; color: #f8fafc;">
+                <h6 class="mb-1" style="color: #f8fafc; margin-bottom: 8px;">${complaint.title}</h6>
+                <p class="mb-1" style="margin-bottom: 8px; font-size: 14px;">${complaint.description}</p>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="background: ${color}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${complaint.priority}</span>
+                    <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 12px; font-size: 11px;">${complaint.id}</span>
+                </div>
+                <small style="color: #cbd5e1;">Category: ${complaint.category.charAt(0).toUpperCase() + complaint.category.slice(1)}</small>
+            </div>
+        `);
+        
+        fullscreenMarkers.push(marker);
+    });
+}
+
+function toggleFullscreen() {
+    const modal = document.getElementById('fullscreenModal');
+    modal.classList.add('active');
+    
+    // Initialize fullscreen map if not already done
+    setTimeout(() => {
+        if (!fullscreenMap) {
+            fullscreenMap = L.map('fullscreenMap').setView([22.580278, 88.458889], 14);
+            
+            L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=Vn3pvUHd7x3bXsgTTGKY', {
+                attribution: '© MapTiler © OpenStreetMap contributors',
+                maxZoom: 18
+            }).addTo(fullscreenMap);
+        }
+        
+        fullscreenMap.invalidateSize();
+        loadFullscreenMapMarkers();
+    }, 100);
+}
+
+function closeFullscreen() {
+    const modal = document.getElementById('fullscreenModal');
+    modal.classList.remove('active');
+}
+
 // Event Listeners Setup
 function setupEventListeners() {
     // Sidebar toggle
@@ -681,7 +850,7 @@ function setupEventListeners() {
     
     // Filter listeners
     document.addEventListener('change', (e) => {
-        if (e.target.id === 'priorityFilter' || e.target.id === 'statusFilter') {
+        if (e.target.id === 'categoryFilter' || e.target.id === 'priorityFilter' || e.target.id === 'statusFilter') {
             filterComplaints();
         }
     });
@@ -690,6 +859,7 @@ function setupEventListeners() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeModal();
+            closeFullscreen();
         }
         
         if (e.ctrlKey && e.key === 'b') {
@@ -704,8 +874,37 @@ function setupEventListeners() {
             sidebar.classList.remove('active');
             mobileOverlay.classList.remove('active');
         }
+        
+        // Invalidate map size on resize
+        if (map) {
+            setTimeout(() => map.invalidateSize(), 100);
+        }
+        if (fullscreenMap) {
+            setTimeout(() => fullscreenMap.invalidateSize(), 100);
+        }
     });
 }
 
+// Global functions for HTML onclick handlers
+window.toggleFullscreen = toggleFullscreen;
+window.closeFullscreen = closeFullscreen;
+window.openComplaintModal = openComplaintModal;
+window.closeModal = closeModal;
+window.updateComplaintStatus = updateComplaintStatus;
+window.assignComplaint = assignComplaint;
+window.viewMemberDetails = viewMemberDetails;
+window.switchSection = switchSection;
+
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initDashboard);
+document.addEventListener('DOMContentLoaded', () => {
+    initDashboard();
+    
+    // Add staggered animation to cards
+    setTimeout(() => {
+        const cards = document.querySelectorAll('.complaint-card, .analytics-card, .team-card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.classList.add('fade-in');
+        });
+    }, 500);
+});

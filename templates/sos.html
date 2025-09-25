@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Emergency SOS - CivicFix{% endblock %}
+{% block body_class %}sos-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sos.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!-- Animated Background -->
+<div class="animated-bg">
+    <div class="bg-shapes">
+        <div class="shape-1"></div>
+        <div class="shape-2"></div>
+        <div class="shape-3"></div>
+        <div class="shape-4"></div>
+        <div class="shape-5"></div>
+        <div class="shape-6"></div>
+    </div>
+</div>
+
+<!-- Emergency Status Indicator -->
+<div class="emergency-status">
+    <div class="status-indicator"></div>
+    <span class="status-text">Emergency Services Ready</span>
+</div>
+
+<!-- Main SOS Container -->
+<div class="sos-container">
+    <div class="sos-content">
+        <!-- Emergency Badge -->
+        <div class="emergency-badge">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Emergency SOS</span>
+        </div>
+        
+        <!-- SOS Title -->
+        <h1 class="sos-title">
+            <span class="emergency-text">Emergency</span> SOS
+        </h1>
+        
+        <!-- SOS Description -->
+        <p class="sos-description">
+            In case of emergency, press the SOS button below. Your location will be shared with emergency services for immediate assistance.
+        </p>
+        
+        <!-- Main SOS Button -->
+        <button class="sos-btn-main" onclick="window.location.href='tel:112'" aria-label="Emergency SOS - Call 112">
+            SOS
+        </button>
+        
+        <!-- Emergency Instructions -->
+        <div class="emergency-instructions">
+            <h3>
+                <i class="fas fa-info-circle"></i>
+                Emergency Instructions
+            </h3>
+            <p>
+                Press the SOS button twice to confirm emergency call. Stay calm, speak clearly, and provide your exact location to the emergency operator.
+            </p>
+        </div>
+        
+        <!-- Emergency Contacts Grid -->
+        <div class="emergency-contacts">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="contact-title">Police</div>
+                <a href="tel:100" class="contact-link">
+                    <i class="fas fa-phone"></i>
+                    100
+                </a>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-ambulance"></i>
+                </div>
+                <div class="contact-title">Ambulance</div>
+                <a href="tel:102" class="contact-link">
+                    <i class="fas fa-phone"></i>
+                    102
+                </a>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-fire-extinguisher"></i>
+                </div>
+                <div class="contact-title">Fire Department</div>
+                <a href="tel:101" class="contact-link">
+                    <i class="fas fa-phone"></i>
+                    101
+                </a>
+            </div>
+        </div>
+        
+        <!-- Additional Actions -->
+        <div class="additional-actions">
+            <a href="{% url 'home' %}" class="action-btn">
+                <i class="fas fa-home"></i>
+                Back to Home
+            </a>
+            <a href="{% if request.user.role == 'citizen' %}{% url 'dashboard_citizen' %}{% elif request.user.role == 'authority' %}{% url 'dashboard_authority' %}{% else %}{% url 'dashboard_admin' %}{% endif %}" class="action-btn">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Emergency Tips -->
+<div class="emergency-tips">
+    <div class="tips-title">
+        <i class="fas fa-lightbulb"></i>
+        Emergency Tips
+    </div>
+    <ul class="tips-list">
+        <li>Stay calm and speak clearly</li>
+        <li>Know your exact location</li>
+        <li>Don't hang up until told to do so</li>
+        <li>Follow dispatcher instructions</li>
+        <li>Keep your phone charged</li>
+    </ul>
+</div>
+
+{% block extra_js %}
+<script src="{% static 'js/sos.js' %}"></script>
+{% endblock %}
+{% endblock %}

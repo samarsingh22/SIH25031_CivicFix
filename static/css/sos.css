@@ -1,0 +1,746 @@
+/* SOS Page - Modern Design with Animations */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary-blue: #003366;
+  --charcoal-gray: #333333;
+  --vibrant-orange: #FF6600;
+  --soft-white: #F0F4F8;
+  --light-gray: #E2E8F0;
+  --white: #F8FAFC;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --text-primary: var(--charcoal-gray);
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border: #CBD5E0;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --gradient-primary: linear-gradient(135deg, var(--primary-blue) 0%, var(--vibrant-orange) 100%);
+  --gradient-danger: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --emergency-red: #dc3545;
+  --emergency-red-dark: #c82333;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--soft-white);
+  overflow-x: hidden;
+}
+
+/* Enhanced Animated Background */
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bg-shapes {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.bg-shapes > div {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(220, 53, 69, 0.08) 0%, rgba(0, 51, 102, 0.04) 50%, transparent 70%);
+  animation: float 25s infinite linear;
+  filter: blur(1px);
+}
+
+.bg-shapes::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(220, 53, 69, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 51, 102, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(220, 53, 69, 0.02) 0%, transparent 50%);
+  animation: backgroundPulse 15s ease-in-out infinite;
+}
+
+.bg-shapes::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 0%, rgba(220, 53, 69, 0.01) 25%, transparent 50%, rgba(0, 51, 102, 0.01) 75%, transparent 100%);
+  animation: gradientShift 20s ease-in-out infinite;
+}
+
+.shape-1 {
+  width: 450px;
+  height: 450px;
+  top: -15%;
+  left: -15%;
+  animation-delay: 0s;
+  animation-duration: 30s;
+}
+
+.shape-2 {
+  width: 350px;
+  height: 350px;
+  top: 15%;
+  right: -10%;
+  animation-delay: -7s;
+  animation-duration: 35s;
+}
+
+.shape-3 {
+  width: 250px;
+  height: 250px;
+  bottom: 25%;
+  left: 5%;
+  animation-delay: -14s;
+  animation-duration: 28s;
+}
+
+.shape-4 {
+  width: 400px;
+  height: 400px;
+  bottom: -15%;
+  right: 15%;
+  animation-delay: -21s;
+  animation-duration: 32s;
+}
+
+.shape-5 {
+  width: 180px;
+  height: 180px;
+  top: 45%;
+  left: 45%;
+  animation-delay: -10s;
+  animation-duration: 26s;
+}
+
+.shape-6 {
+  width: 300px;
+  height: 300px;
+  top: 65%;
+  right: 35%;
+  animation-delay: -17s;
+  animation-duration: 29s;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  25% { transform: translate(40px, -40px) rotate(90deg) scale(1.1); }
+  50% { transform: translate(-30px, 30px) rotate(180deg) scale(0.9); }
+  75% { transform: translate(35px, -25px) rotate(270deg) scale(1.05); }
+  100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+}
+
+@keyframes backgroundPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes gradientShift {
+  0%, 100% { transform: translateX(-50px) rotate(0deg); }
+  50% { transform: translateX(50px) rotate(180deg); }
+}
+
+/* Main SOS Container */
+.sos-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+.sos-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(220, 53, 69, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(0, 51, 102, 0.05) 0%, transparent 50%);
+  animation: heroGlow 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes heroGlow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+.sos-content {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border-radius: 32px;
+  padding: 4rem 3rem;
+  text-align: center;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lg);
+  max-width: 600px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  animation: slideInUp 1s ease-out;
+}
+
+.sos-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-danger);
+  animation: progressBar 3s ease-in-out infinite;
+}
+
+@keyframes progressBar {
+  0% { transform: scaleX(0); }
+  50% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}
+
+/* Emergency Badge */
+.emergency-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(220, 53, 69, 0.1);
+  color: var(--emergency-red);
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  animation: pulse 2s ease-in-out infinite;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.emergency-badge i {
+  font-size: 1.1rem;
+  animation: flash 1.5s ease-in-out infinite;
+}
+
+@keyframes flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* SOS Title */
+.sos-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  animation: slideInUp 0.8s ease-out 0.2s both;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.emergency-text {
+  background: var(--gradient-danger);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* SOS Description */
+.sos-description {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin-bottom: 3rem;
+  line-height: 1.7;
+  animation: slideInUp 0.8s ease-out 0.4s both;
+}
+
+/* Main SOS Button */
+.sos-btn-main {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--gradient-danger);
+  border: none;
+  color: var(--white);
+  font-size: 2.5rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+  box-shadow: 0 10px 30px rgba(220, 53, 69, 0.4);
+  animation: sosButtonPulse 2s ease-in-out infinite;
+}
+
+.sos-btn-main::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.6s ease;
+}
+
+.sos-btn-main:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.sos-btn-main:hover {
+  transform: scale(1.1);
+  box-shadow: 0 15px 40px rgba(220, 53, 69, 0.6);
+  animation: sosButtonHover 0.5s ease-in-out infinite;
+}
+
+.sos-btn-main:active {
+  transform: scale(0.95);
+  animation: sosButtonPress 0.3s ease-out;
+}
+
+@keyframes sosButtonPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(220, 53, 69, 0.6);
+  }
+}
+
+@keyframes sosButtonHover {
+  0%, 100% { transform: scale(1.1); }
+  50% { transform: scale(1.15); }
+}
+
+@keyframes sosButtonPress {
+  0% { transform: scale(0.95); }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(0.95); }
+}
+
+/* Emergency Instructions */
+.emergency-instructions {
+  background: rgba(220, 53, 69, 0.05);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  animation: slideInUp 0.8s ease-out 0.6s both;
+}
+
+.emergency-instructions h3 {
+  color: var(--emergency-red);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emergency-instructions p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Emergency Contacts Grid */
+.emergency-contacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  animation: slideInUp 0.8s ease-out 0.8s both;
+}
+
+.contact-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--glass-border);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.contact-card:hover::before {
+  transform: scaleX(1);
+}
+
+.contact-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--vibrant-orange);
+}
+
+.contact-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(0, 51, 102, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  color: var(--primary-blue);
+  font-size: 1.3rem;
+  transition: var(--transition);
+}
+
+.contact-card:hover .contact-icon {
+  background: var(--primary-blue);
+  color: var(--white);
+  transform: scale(1.1);
+}
+
+.contact-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--emergency-red);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.2rem;
+  transition: var(--transition);
+}
+
+.contact-link:hover {
+  color: var(--emergency-red-dark);
+  transform: scale(1.05);
+}
+
+/* Additional Actions */
+.additional-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  animation: slideInUp 0.8s ease-out 1s both;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: var(--primary-blue);
+  border: 2px solid var(--primary-blue);
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-blue);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.action-btn:hover::before {
+  left: 0;
+}
+
+.action-btn:hover {
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+/* Emergency Status Indicator */
+.emergency-status {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideInRight 1s ease-out 0.5s both;
+  z-index: 1000;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+.status-text {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+/* Floating Emergency Tips */
+.emergency-tips {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+  max-width: 300px;
+  animation: slideInLeft 1s ease-out 0.7s both;
+  z-index: 1000;
+}
+
+.tips-title {
+  color: var(--emergency-red);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tips-list {
+  list-style: none;
+  padding: 0;
+}
+
+.tips-list li {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.tips-list li::before {
+  content: '•';
+  color: var(--emergency-red);
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+/* Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sos-content {
+    padding: 3rem 2rem;
+    margin: 1rem;
+  }
+  
+  .sos-title {
+    font-size: 2.5rem;
+  }
+  
+  .sos-btn-main {
+    width: 150px;
+    height: 150px;
+    font-size: 2rem;
+  }
+  
+  .emergency-contacts {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .additional-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .emergency-status,
+  .emergency-tips {
+    position: relative;
+    margin: 1rem auto;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .sos-container {
+    padding: 1rem;
+  }
+  
+  .sos-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .sos-title {
+    font-size: 2rem;
+  }
+  
+  .sos-btn-main {
+    width: 120px;
+    height: 120px;
+    font-size: 1.5rem;
+  }
+  
+  .emergency-instructions {
+    padding: 1.5rem;
+  }
+}
+
+/* Loading Animation */
+.loading {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Success/Error States */
+.success-message,
+.error-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  z-index: 2000;
+  animation: popIn 0.5s ease-out;
+}
+
+.success-message {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.error-message {
+  border-color: var(--emergency-red);
+  color: var(--emergency-red);
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

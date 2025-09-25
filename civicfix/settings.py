@@ -92,6 +92,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# Media (user uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
@@ -108,4 +112,4 @@ REST_FRAMEWORK = {
 }
 
 # Third-party API keys
-GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')
+GOOGLE_MAPS_API_KEY = 'FNlrOwFsV3Rnp8wvSYvn'

@@ -2,34 +2,395 @@
 {% load static %}
 {% block title %}Complaints & SOS - CivicFix{% endblock %}
 {% block extra_css %}
+
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdn.maptiler.com/maptiler-sdk-js/latest/maptiler-sdk.css" />
 <link rel="stylesheet" href="{% static 'css/citizen.css' %}">
 <style>
-  .layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1rem; }
-  @media (max-width: 992px) { .layout { grid-template-columns: 1fr; } }
-  #map { width: 100%; height: 480px; border-radius: .5rem; }
-  .sos-btn {
-    position: fixed; right: 24px; bottom: 24px; z-index: 1050;
-    background: #dc3545; color: white; border: none; border-radius: 999px;
-    box-shadow: 0 10px 20px rgba(220,53,69,.35); padding: 14px 22px; font-weight: 700;
+  .layout { 
+    display: grid; 
+    grid-template-columns: 1fr 1.2fr; 
+    gap: 2rem;
+    position: relative;
+    z-index: 10;
   }
+  @media (max-width: 992px) { .layout { grid-template-columns: 1fr; gap: 1.5rem; } }
+  
+  /* Enhanced page header */
+  .page-header {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+    z-index: 10;
+  }
+  
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  
+  .page-header:hover::before {
+    transform: scaleX(1);
+  }
+  
+  .page-header h1 {
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
+  
+  /* Enhanced cards */
+  .card {
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: var(--shadow-md) !important;
+    transition: var(--transition) !important;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--vibrant-orange);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover::before {
+    transform: scaleX(1);
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(255, 102, 0, 0.15) !important;
+    border-color: var(--vibrant-orange) !important;
+  }
+  
+  .card-header {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    font-weight: 600;
+    color: var(--text-primary) !important;
+  }
+  
+  /* Enhanced form controls */
+  .form-control {
+    background: var(--white) !important;
+    border: 2px solid var(--light-gray) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
+    transition: var(--transition) !important;
+  }
+  
+  .form-control:focus {
+    border-color: var(--vibrant-orange) !important;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1) !important;
+    outline: none !important;
+    transform: translateY(-1px);
+  }
+  
+  .form-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Enhanced buttons */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--vibrant-orange), #e55a00) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 600 !important;
+    transition: var(--transition) !important;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  .btn-primary:hover::before {
+    left: 100%;
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #e55a00, #cc5200) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 102, 0, 0.3) !important;
+  }
+  
+  .btn-outline-primary, .btn-outline-secondary {
+    border: 2px solid var(--primary-blue) !important;
+    color: var(--primary-blue) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 500 !important;
+    transition: var(--transition) !important;
+    background: transparent !important;
+  }
+  
+  .btn-outline-primary:hover, .btn-outline-secondary:hover {
+    background: var(--primary-blue) !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3) !important;
+  }
+  
+  /* Map styling */
+  #map { 
+    width: 100%; 
+    height: 520px; 
+    border-radius: 20px; 
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--glass-border);
+    transition: var(--transition);
+  }
+  
+  #map:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+  
+  .map-controls { 
+    position: absolute; 
+    z-index: 5; 
+    width: calc(100% - 2rem); 
+    margin: 1rem; 
+    display: flex; 
+    gap: 1rem; 
+  }
+  
+  .map-card { 
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--glass-border);
+    transition: var(--transition);
+  }
+  
+  .map-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  /* Enhanced SOS button */
+  .sos-btn {
+    position: fixed; 
+    right: 24px; 
+    bottom: 24px; 
+    z-index: 1050;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white; 
+    border: none; 
+    border-radius: 50px;
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+    padding: 16px 24px; 
+    font-weight: 700;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    animation: sosGlow 2s ease-in-out infinite;
+  }
+  
+  @keyframes sosGlow {
+    0%, 100% { 
+      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+    }
+    50% { 
+      box-shadow: 0 8px 35px rgba(220, 53, 69, 0.6);
+    }
+  }
+  
+  .sos-btn:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(220, 53, 69, 0.5);
+  }
+  
   .sos-btn i { margin-right: 8px; }
-  .list-container { max-height: 240px; overflow: auto; }
-  .badge-sos { background: #dc3545; }
-  .badge-normal { background: #0d6efd; }
+  
+  /* List styling */
+  .list-container { 
+    max-height: 300px; 
+    overflow: auto;
+    border-radius: 12px;
+  }
+  
+  .list-group-item {
+    background: var(--white) !important;
+    border: 1px solid var(--light-gray) !important;
+    border-radius: 12px !important;
+    margin-bottom: 0.5rem !important;
+    transition: var(--transition) !important;
+    cursor: pointer;
+  }
+  
+  .list-group-item:hover {
+    background: rgba(255, 102, 0, 0.05) !important;
+    border-color: var(--vibrant-orange) !important;
+    transform: translateX(4px);
+  }
+  
+  /* Badge styling */
+  .badge-sos { 
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    color: white;
+    padding: 0.375rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  
+  .badge-normal { 
+    background: linear-gradient(135deg, var(--primary-blue), #0056b3) !important;
+    color: white;
+    padding: 0.375rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  
+  .thumb { 
+    width: 72px; 
+    height: 72px; 
+    object-fit: cover; 
+    border-radius: 12px; 
+    border: 2px solid var(--light-gray);
+    transition: var(--transition);
+  }
+  
+  .thumb:hover {
+    border-color: var(--vibrant-orange);
+    transform: scale(1.05);
+  }
+  
+  /* Animation classes */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+  
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Scrollbar styling */
+  .list-container::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .list-container::-webkit-scrollbar-track {
+    background: var(--light-gray);
+    border-radius: 3px;
+  }
+  
+  .list-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 102, 0, 0.5);
+    border-radius: 3px;
+  }
+  
+  .list-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 102, 0, 0.7);
+  }
+  
+  /* Hide Leaflet default controls and tooltips */
+  .leaflet-control-zoom a {
+    text-decoration: none !important;
+  }
+  
+  .leaflet-tooltip {
+    display: none !important;
+  }
+  
+  .leaflet-control-attribution {
+    font-size: 10px !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  /* Hide zoom control tooltips and hover effects */
+  .leaflet-control-zoom a:hover::after,
+  .leaflet-control-zoom a::after,
+  .leaflet-control-zoom a[title]:hover::after {
+    display: none !important;
+    content: none !important;
+  }
+  
+  .leaflet-control-zoom a {
+    position: relative !important;
+  }
+  
+  .leaflet-control-zoom a:hover {
+    background: #f4f4f4 !important;
+  }
+  
+  /* Remove any title attributes that show tooltips */
+  .leaflet-control-zoom-in,
+  .leaflet-control-zoom-out {
+    text-indent: 0 !important;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0">Report a Complaint</h1>
+<!-- Enhanced Animated Background -->
+<div class="animated-bg">
+  <div class="bg-shapes">
+    <div class="shape-1"></div>
+    <div class="shape-2"></div>
+    <div class="shape-3"></div>
+    <div class="shape-4"></div>
+    <div class="shape-5"></div>
+    <div class="shape-6"></div>
+  </div>
+</div>
+
+<div class="page-header fade-in text-center">
+  <h1 class="h1 mb-3 fw-bold text-dark">Report a Complaint</h1>
+  <p class="mb-0 text-muted fs-5">Help us improve your community by reporting issues</p>
 </div>
 
 <div class="layout">
   <!-- Left: Complaint form and list -->
   <div>
-    <div class="card mb-3">
+    <div class="card mb-3 fade-in" style="animation-delay: 0.1s;">
       <div class="card-body">
-        <form id="complaintForm">
+        <form id="complaintForm" enctype="multipart/form-data">
           <div class="mb-3">
             <label class="form-label">Describe the issue</label>
             <textarea class="form-control" id="description" rows="4" placeholder="Pothole on the main road, water leakage, etc." required></textarea>
@@ -44,15 +405,23 @@
               <input type="number" step="any" class="form-control" id="longitude" placeholder="e.g., 77.2090" required>
             </div>
           </div>
+          <div class="mt-3">
+            <label class="form-label">Upload photo (optional)</label>
+            <input type="file" id="photo" accept="image/*" class="form-control">
+            <div class="mt-2" id="photoPreview" style="display:none">
+              <img id="photoThumb" class="thumb" alt="preview" />
+              <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="clearPhoto">Remove</button>
+            </div>
+          </div>
           <div class="mt-3 d-flex gap-2">
             <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane"></i> Submit Complaint</button>
-            <button type="button" id="useMyLocation" class="btn btn-outline-secondary"><i class="fa fa-location-crosshairs"></i> <span class="label">Use my location</span></button>
+<button type="button" id="useMyLocation" class="btn btn-outline-secondary"><i class="fa fa-location-crosshairs"></i> <span class="label">Use my location</span></button>
           </div>
         </form>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card fade-in" style="animation-delay: 0.2s;">
       <div class="card-header d-flex justify-content-between align-items-center">
         <strong>My Recent Complaints</strong>
         <button class="btn btn-sm btn-outline-primary" id="refreshList"><i class="fa fa-rotate"></i> Refresh</button>
@@ -64,7 +433,8 @@
   </div>
 
   <!-- Right: Map -->
-  <div>
+  <div style="position: relative;" class="fade-in" style="animation-delay: 0.3s;">
+
     <div id="map" class="border"></div>
   </div>
 </div>
@@ -76,49 +446,222 @@
 {% endblock %}
 
 {% block extra_js %}
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.maptiler.com/maptiler-sdk-js/latest/maptiler-sdk.js"></script>
+
+
 <script>
   // Globals
   const API_BASE = '/api/complaints/';
-  let map, marker, infoWindow;
+  let map, marker, infoWindow, userCenter;
+  let searchBox;
+  const MIN_ZOOM_LEVEL = 13;
+
+
+  // Add this after your globals
+const SAMPLE_ISSUES = [
+  {
+    id: 'NW001',
+    latitude: 22.580278,
+    longitude: 88.458889,
+    description: 'Large pothole near Eco Space Business Park, needs immediate repair',
+    is_sos: true
+  },
+  {
+    id: 'NW002',
+    latitude: 22.582500,
+    longitude: 88.456111,
+    description: 'Broken water pipeline causing water wastage near DLF IT Park',
+    is_sos: true
+  },
+  {
+    id: 'NW003',
+    latitude: 22.576944,
+    longitude: 88.461389,
+    description: 'Street lights not working on Major Arterial Road',
+    is_sos: true
+  },
+  {
+    id: 'NW004',
+    latitude: 22.579167,
+    longitude: 88.455556,
+    description: 'Multiple potholes near Eco Park Gate 1',
+    is_sos: true
+  },
+  {
+    id: 'NW005',
+    latitude: 22.583333,
+    longitude: 88.459722,
+    description: 'Broken drainage cover near Mother\'s Wax Museum',
+    is_sos: true
+  }
+];
 
   function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: { lat: 28.6139, lng: 77.2090 }, // Default center (Delhi)
-      zoom: 12,
+    // Initialize map
+   map = L.map('map').setView([22.580278, 88.458889], 14);
+
+
+    // Add MapTiler layer
+    L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=Vn3pvUHd7x3bXsgTTGKY', {
+      attribution: '© MapTiler © OpenStreetMap contributors',
+      maxZoom: 18
+    }).addTo(map);
+    
+    // Remove tooltips from zoom controls
+    setTimeout(() => {
+      const zoomIn = document.querySelector('.leaflet-control-zoom-in');
+      const zoomOut = document.querySelector('.leaflet-control-zoom-out');
+      if (zoomIn) {
+        zoomIn.removeAttribute('title');
+        zoomIn.setAttribute('title', '');
+      }
+      if (zoomOut) {
+        zoomOut.removeAttribute('title');
+        zoomOut.setAttribute('title', '');
+      }
+    }, 100);
+
+    const markerGroup = L.layerGroup().addTo(map);
+
+    map.on('zoomend', () => {
+        const currentZoom = map.getZoom();
+        if (currentZoom < MIN_ZOOM_LEVEL) {
+            markerGroup.clearLayers();
+        } else {
+            markerGroup.clearLayers();
+
+
+        SAMPLE_ISSUES.forEach(issue => {
+            const icon = L.divIcon({
+                html: `<div style="background-color: #dc3545; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">!</div>`,
+                className: 'custom-div-icon',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            const marker = L.marker([issue.latitude, issue.longitude], { icon }).addTo(map);
+            
+            marker.bindPopup(`
+                <div style="min-width: 200px">
+                    <h6 class="mb-1">Issue #${issue.id}</h6>
+                    <p class="mb-1">${issue.description}</p>
+                    <small class="text-muted">Location: ${issue.latitude.toFixed(6)}, ${issue.longitude.toFixed(6)}</small>
+                </div>
+            `);
+            markerGroup.addLayer(marker);
+        });
+
+      }
+
     });
 
-    infoWindow = new google.maps.InfoWindow();
+    if (map.getZoom() < MIN_ZOOM_LEVEL) {
+        markerGroup.clearLayers();
+    }
+
+  
+
 
     // Create a draggable marker (hidden initially)
-    marker = new google.maps.Marker({
-      map,
-      draggable: true,
-      visible: false,
+    marker = L.marker([28.6139, 77.2090], {
+      draggable: true
+    });
+    
+    // Don't add to map initially
+    marker.on('dragend', function() {
+      const pos = marker.getLatLng();
+      setInputs(pos.lat, pos.lng);
     });
 
     // Enable the geolocation button once map is ready
-    const locBtn = document.getElementById('useMyLocation');
-    if (locBtn) locBtn.disabled = false;
+function geoFillInputs() {
+  const btn = document.getElementById('useMyLocation');
+  if (btn) { 
+    btn.disabled = true; 
+    btn.querySelector('.label').textContent = 'Locating…'; 
+  }
+
+  navigator.geolocation.getCurrentPosition((pos) => {
+    const { latitude, longitude } = pos.coords;
+    userCenter = [latitude, longitude]; // Changed to array format for Leaflet
+
+    if (map && marker) {
+      setMarker(latitude, longitude);
+      map.setView(userCenter, 16); // Use setView instead of setZoom
+    } else {
+      setInputs(latitude, longitude);
+    }
+
+    if (btn) { 
+      btn.disabled = false; 
+      btn.querySelector('.label').textContent = 'Use my location'; 
+    }
+  }, (err) => {
+    if (err.code === 1) {
+      showLocationHelpModal();
+    } else {
+      const msg = {
+        2: 'Position unavailable. Try again.',
+        3: 'Request timed out. Try again.',
+      }[err.code] || ('Geolocation error: ' + err.message);
+      alert(msg);
+    }
+    if (btn) { 
+      btn.disabled = false; 
+      btn.querySelector('.label').textContent = 'Use my location'; 
+    }
+  }, { 
+    enableHighAccuracy: true, 
+    timeout: 10000, 
+    maximumAge: 0 
+  });
+}
+
+
+
 
     // On map click: place/move marker and fill inputs
-    map.addListener('click', (e) => {
-      setMarker(e.latLng.lat(), e.latLng.lng());
+    map.on('click', (e) => {
+      setMarker(e.latlng.lat, e.latlng.lng);
     });
 
-    // On marker drag: update inputs
-    marker.addListener('dragend', () => {
-      const pos = marker.getPosition();
-      setInputs(pos.lat(), pos.lng());
-    });
+
 
     // Initial fetch
     fetchComplaintsAndRender();
+    
+    // Remove zoom control tooltips after map is fully loaded
+    map.whenReady(() => {
+      setTimeout(() => {
+        const zoomControls = document.querySelectorAll('.leaflet-control-zoom a');
+        zoomControls.forEach(control => {
+          control.removeAttribute('title');
+          control.setAttribute('title', '');
+        });
+      }, 500);
+    });
+  }
+
+  function makeBangIcon(color) {
+    // Simple SVG "!" icon as data URL
+    const svg = `<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48"><path d="M18 0C8 0 0 8 0 18s8 18 18 30c10-12 18-20 18-30S28 0 18 0z" fill="${color}"/><text x="18" y="23" text-anchor="middle" font-family="Arial" font-size="22" fill="#fff" font-weight="700">!</text></svg>`;
+    return {
+      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+      scaledSize: new google.maps.Size(36, 48),
+      anchor: new google.maps.Point(18, 48)
+    };
   }
 
   function setMarker(lat, lng, { show = true } = {}) {
-    marker.setPosition({ lat: parseFloat(lat), lng: parseFloat(lng) });
-    marker.setVisible(show);
-    map.panTo(marker.getPosition());
+    const latLng = [parseFloat(lat), parseFloat(lng)];
+    marker.setLatLng(latLng);
+    if (show && !map.hasLayer(marker)) {
+      marker.addTo(map);
+    }
+    map.setView(latLng, Math.max(map.getZoom(), 15));
     setInputs(lat, lng);
   }
 
@@ -127,12 +670,45 @@
     document.getElementById('longitude').value = parseFloat(lng).toFixed(6);
   }
 
+function renderMarkers(items) {
+    // Clear existing markers
+    marker.setVisible(false);
+    
+    // Render actual complaints
+    items.forEach(addMapMarker);
+    
+    // Render sample issues
+    SAMPLE_ISSUES.forEach(issue => addMapMarker(issue));
+}
+
+
+
+
   // Form submission -> POST /api/complaints/
   document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('complaintForm');
     const sosBtn = document.getElementById('sosButton');
     const useMyLocationBtn = document.getElementById('useMyLocation');
     const refreshBtn = document.getElementById('refreshList');
+    const photoInput = document.getElementById('photo');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoThumb = document.getElementById('photoThumb');
+    const clearPhoto = document.getElementById('clearPhoto');
+
+    photoInput.addEventListener('change', () => {
+      const file = photoInput.files && photoInput.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        photoThumb.src = url;
+        photoPreview.style.display = '';
+      } else {
+        photoPreview.style.display = 'none';
+      }
+    });
+    clearPhoto.addEventListener('click', () => {
+      photoInput.value = '';
+      photoPreview.style.display = 'none';
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -142,19 +718,24 @@
       if (!description) { alert('Please enter a description.'); return; }
 
       try {
+        const fd = new FormData();
+        fd.append('description', description);
+        fd.append('latitude', latitude);
+        fd.append('longitude', longitude);
+        if (photoInput.files && photoInput.files[0]) {
+          fd.append('photo', photoInput.files[0]);
+        }
         const res = await fetch(API_BASE, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken(),
-          },
-          body: JSON.stringify({ description, latitude, longitude })
+          headers: { 'X-CSRFToken': getCsrfToken() },
+          body: fd,
         });
-        if (!res.ok) throw new Error('Failed to submit complaint');
+        if (!res.ok) throw new Error('Complaint Submitted!');
         const data = await res.json();
         // Place a blue marker and reset form
         addMapMarker(data, { center: true });
         form.reset();
+        photoPreview.style.display = 'none';
         alert('Complaint submitted.');
         fetchComplaintsAndRender();
       } catch (err) {
@@ -214,17 +795,16 @@
     if (btn) { btn.disabled = true; btn.querySelector('.label').textContent = 'Locating…'; }
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
+      userCenter = [latitude, longitude];
       if (map && marker) {
         setMarker(latitude, longitude);
-        map.setZoom(16); // zoom closer to current position
+        map.setView(userCenter, 16);
       } else {
-        // Map not ready yet; just fill inputs. initMap will pick these up.
         setInputs(latitude, longitude);
       }
       if (btn) { btn.disabled = false; btn.querySelector('.label').textContent = 'Use my location'; }
     }, (err) => {
       if (err.code === 1) {
-        // Permission denied – show help modal
         showLocationHelpModal();
       } else {
         const msg = {
@@ -257,8 +837,8 @@
             <div class="modal-body pt-3">
               <ol class="mb-3 ps-3">
                 <li class="mb-1">Click the lock icon in the address bar.</li>
-                <li class="mb-1">Open “Permissions” or “Site settings”.</li>
-                <li class="mb-1">Set “Location” to “Allow”, then try again.</li>
+                <li class="mb-1">Open "Permissions" or "Site settings".</li>
+                <li class="mb-1">Set "Location" to "Allow", then try again.</li>
               </ol>
               <div class="small text-muted">Tip: Geolocation works best on HTTPS or localhost.</div>
             </div>
@@ -307,16 +887,21 @@
       const li = document.createElement('li');
       li.className = 'list-group-item d-flex justify-content-between align-items-center';
       const badgeClass = item.is_sos ? 'badge-sos' : 'badge-normal';
+      const photoHtml = item.photo ? `<img src="${item.photo}" class="thumb me-2" alt="photo" />` : '';
       li.innerHTML = `
-        <span>
-          <strong>#${item.id}</strong> — ${escapeHtml(item.description)}
-          <small class="text-muted">(${parseFloat(item.latitude).toFixed(4)}, ${parseFloat(item.longitude).toFixed(4)})</small>
+        <span class="d-flex align-items-center">
+          ${photoHtml}
+          <span>
+            <strong>#${item.id}</strong> — ${escapeHtml(item.description)}
+            <small class="text-muted">(${parseFloat(item.latitude).toFixed(4)}, ${parseFloat(item.longitude).toFixed(4)})</small>
+          </span>
         </span>
         <span class="badge ${badgeClass}">${item.is_sos ? 'SOS' : 'Complaint'}</span>
       `;
       li.addEventListener('click', () => {
         setMarker(item.latitude, item.longitude);
-        infoWindow.setContent(`#${item.id} ${escapeHtml(item.description)}`);
+        const content = `#${item.id} ${escapeHtml(item.description)}${item.photo ? '<br/><img src="' + item.photo + '" style="max-width:200px;border-radius:8px;margin-top:6px;"/>' : ''}`;
+        infoWindow.setContent(content);
         infoWindow.open({ anchor: marker, map });
       });
       list.appendChild(li);
@@ -324,33 +909,26 @@
   }
 
   function renderMarkers(items) {
-    // Clear existing temporary marker visibility
     marker.setVisible(false);
     items.forEach(addMapMarker);
   }
 
   function addMapMarker(item, options = {}) {
-    const color = item.is_sos ? 'red' : 'blue';
-    const pin = new google.maps.marker.PinElement({
-      background: color,
-      borderColor: color,
-      glyphColor: 'white'
-    });
-    const m = new google.maps.marker.AdvancedMarkerElement({
+    const color = item.is_sos ? '#dc3545' : '#0d6efd';
+    const m = new google.maps.Marker({
       map,
       position: { lat: parseFloat(item.latitude), lng: parseFloat(item.longitude) },
-      content: pin.element
+      icon: makeBangIcon(color),
     });
     m.addListener('click', () => {
-      const content = `#${item.id} ${escapeHtml(item.description)}`;
+      const content = `#${item.id} ${escapeHtml(item.description)}${item.photo ? '<br/><img src="' + item.photo + '" style="max-width:220px;border-radius:8px;margin-top:6px;"/>' : ''}`;
       new google.maps.InfoWindow({ content }).open({ anchor: m, map });
     });
-    if (options.center) map.panTo(m.position);
+    if (options.center) map.panTo(m.getPosition());
   }
 
   function escapeHtml(s) {
-    // Escape minimal HTML to avoid XSS in InfoWindow/list
-    return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c] || c));
+    return String(s).replace(/[&<>\\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\\"':'&quot;'}[c] || c));
   }
 
   function getCsrfToken() {
@@ -360,10 +938,37 @@
       const x = c.trim();
       if (x.startsWith(name)) return x.substring(name.length, x.length);
     }
-    // Fallback: look for csrftoken input if present
     const meta = document.querySelector('input[name=csrfmiddlewaretoken]');
     return meta ? meta.value : '';
   }
+
+
+
+  function addMapMarker(item, options = {}) {
+    const icon = L.divIcon({
+        html: `<div style="background-color: ${item.is_sos ? '#dc3545' : '#0d6efd'}; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white;"></div>`,
+        className: 'custom-div-icon',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+    });
+
+    const marker = L.marker([item.latitude, item.longitude], { icon });
+    
+    marker.bindPopup(`
+     
+    `);
+
+     marker.addTo(map);
+
+    
+    if (options.center) {
+        map.setView([item.latitude, item.longitude], Math.max(map.getZoom(), MIN_ZOOM_LEVEL));
+    }
+
+    return marker;
+}
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap&libraries=marker"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', initMap);
+</script>
 {% endblock %}

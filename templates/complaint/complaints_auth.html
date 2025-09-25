@@ -1,0 +1,836 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Complaints & SOS - CivicFix{% endblock %}
+{% block body_class %}complaints-page{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{% static 'css/citizen.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+:root {
+  --primary-blue: #003366;
+  --charcoal-gray: #333333;
+  --vibrant-orange: #FF6600;
+  --soft-white: #F0F4F8;
+  --light-gray: #E2E8F0;
+  --white: #F8FAFC;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --text-primary: var(--charcoal-gray);
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border: #CBD5E0;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --gradient-primary: linear-gradient(135deg, var(--primary-blue) 0%, var(--vibrant-orange) 100%);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--soft-white);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bg-shapes {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.bg-shapes > div {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 102, 0, 0.08) 0%, rgba(0, 51, 102, 0.04) 50%, transparent 70%);
+  animation: float 25s infinite linear;
+  filter: blur(1px);
+}
+
+.bg-shapes::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 51, 102, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 102, 0, 0.02) 0%, transparent 50%);
+  animation: backgroundPulse 15s ease-in-out infinite;
+}
+
+.bg-shapes::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 0%, rgba(255, 102, 0, 0.01) 25%, transparent 50%, rgba(0, 51, 102, 0.01) 75%, transparent 100%);
+  animation: gradientShift 20s ease-in-out infinite;
+}
+
+.shape-1 {
+  width: 450px;
+  height: 450px;
+  top: -15%;
+  left: -15%;
+  animation-delay: 0s;
+  animation-duration: 30s;
+}
+
+.shape-2 {
+  width: 350px;
+  height: 350px;
+  top: 15%;
+  right: -10%;
+  animation-delay: -7s;
+  animation-duration: 35s;
+}
+
+.shape-3 {
+  width: 250px;
+  height: 250px;
+  bottom: 25%;
+  left: 5%;
+  animation-delay: -14s;
+  animation-duration: 28s;
+}
+
+.shape-4 {
+  width: 400px;
+  height: 400px;
+  bottom: -15%;
+  right: 15%;
+  animation-delay: -21s;
+  animation-duration: 32s;
+}
+
+.shape-5 {
+  width: 180px;
+  height: 180px;
+  top: 45%;
+  left: 45%;
+  animation-delay: -10s;
+  animation-duration: 26s;
+}
+
+.shape-6 {
+  width: 300px;
+  height: 300px;
+  top: 65%;
+  right: 35%;
+  animation-delay: -17s;
+  animation-duration: 29s;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  25% { transform: translate(40px, -40px) rotate(90deg) scale(1.1); }
+  50% { transform: translate(-30px, 30px) rotate(180deg) scale(0.9); }
+  75% { transform: translate(35px, -25px) rotate(270deg) scale(1.05); }
+  100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+}
+
+@keyframes backgroundPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes gradientShift {
+  0%, 100% { transform: translateX(-50px) rotate(0deg); }
+  50% { transform: translateX(50px) rotate(180deg); }
+}
+
+.layout { 
+  display: grid; 
+  grid-template-columns: 400px 1fr; 
+  gap: 1.5rem; 
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+@media (max-width: 992px) { 
+  .layout { 
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  } 
+}
+
+#map { 
+  width: 100%; 
+  height: 520px; 
+  border-radius: 24px; 
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--glass-border);
+  transition: var(--transition);
+}
+
+#map:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(255, 102, 0, 0.15);
+}
+
+.card { 
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.card-section {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.card-section:hover {
+  border-color: #FF6600;
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-section:last-child {
+  margin-bottom: 0;
+}
+
+.list-container { 
+  max-height: 320px; 
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--vibrant-orange) transparent;
+}
+
+.list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.list-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list-container::-webkit-scrollbar-thumb {
+  background: var(--vibrant-orange);
+  border-radius: 3px;
+}
+
+.search-section { 
+  padding: 20px; 
+  border: none;
+  background: transparent;
+}
+
+.search-section .form-label {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.route-btn { 
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border: none; 
+  color: white; 
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.5rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.route-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.route-btn:hover::before {
+  left: 100%;
+}
+
+.route-btn:hover { 
+  background: linear-gradient(135deg, #20c997, #28a745);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.badge-sos { 
+  background: linear-gradient(135deg, #dc3545, #c82333); 
+  color: white; 
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.badge-normal { 
+  background: linear-gradient(135deg, #0d6efd, #0056b3); 
+  color: white; 
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.info-sidebar .card-header { 
+  background: transparent;
+  border: none;
+  padding: 1.5rem;
+  color: var(--text-primary);
+}
+
+.card-header h5 {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.card-header small {
+  color: var(--text-secondary) !important;
+  opacity: 1 !important;
+}
+
+.list-group-item { 
+  border: none; 
+  padding: 16px; 
+  transition: var(--transition);
+  background: transparent;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}
+
+.list-group-item:hover { 
+  background: rgba(248, 249, 250, 0.8);
+  transform: translateX(4px);
+}
+
+.list-group-item h6 {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.list-group-item .text-muted {
+  color: var(--text-secondary) !important;
+}
+
+.list-group-item small {
+  color: var(--text-secondary) !important;
+}
+
+.priority-icon { 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  margin-right: 12px;
+  transition: var(--transition);
+}
+
+.list-group-item:hover .priority-icon {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: var(--shadow-md);
+}
+
+.priority-high { 
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  animation: priorityGlow 3s ease-in-out infinite;
+}
+
+.priority-medium { 
+  background: linear-gradient(135deg, #ffc107, #e0a800); 
+}
+
+.priority-normal { 
+  background: linear-gradient(135deg, #17a2b8, #138496); 
+}
+
+@keyframes priorityGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(220, 53, 69, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(220, 53, 69, 0.6); }
+}
+
+.card-footer {
+  background: transparent;
+  border: none;
+  padding: 1.5rem;
+}
+
+.card-footer .text-danger {
+  color: #dc3545 !important;
+}
+
+.card-footer .text-primary {
+  color: #0d6efd !important;
+}
+
+.card-footer .text-success {
+  color: #198754 !important;
+}
+
+.card-footer .text-muted {
+  color: var(--text-secondary) !important;
+  font-weight: 500;
+}
+
+.form-control {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  transition: var(--transition);
+  color: var(--text-primary);
+}
+
+.form-control:focus {
+  border-color: var(--vibrant-orange);
+  box-shadow: 0 0 0 0.2rem rgba(255, 102, 0, 0.25);
+  background: var(--white);
+  outline: none;
+}
+
+.btn-outline-primary {
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  transition: var(--transition);
+}
+
+.btn-outline-primary:hover {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.input-group-text {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 12px 0 0 12px;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 10;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a202c;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: #4a5568;
+  max-width: 700px;
+  margin: 0 auto;
+  font-weight: 500;
+  line-height: 1.6;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .layout {
+    gap: 1rem;
+  }
+  
+  #map {
+    height: 400px;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Animated Background -->
+<div class="animated-bg">
+  <div class="bg-shapes">
+    <div class="shape-1"></div>
+    <div class="shape-2"></div>
+    <div class="shape-3"></div>
+    <div class="shape-4"></div>
+    <div class="shape-5"></div>
+    <div class="shape-6"></div>
+  </div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="d-flex align-items-center justify-content-center mb-3">
+    <div class="me-3" style="width: 60px; height: 60px; background: #E8F4FD; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+      <i class="fa fa-map-marker-alt" style="font-size: 24px; color: #2C5AA0;"></i>
+    </div>
+    <div class="text-start">
+      <h1 class="page-title mb-0" style="color: #000000;">Live Issue Tracking</h1>
+    </div>
+  </div>
+  <p class="page-subtitle" style="color: #000000;">Real-time civic issues monitoring and emergency response system for New Town</p>
+</div>
+
+<div class="layout">
+  <div class="info-sidebar">
+    <div class="card h-100">
+      <div class="card-section">
+        <div class="card-header text-white">
+          <div class="d-flex align-items-center">
+            <div class="me-3" style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+              <i class="fa fa-map-marker-alt" style="font-size: 20px;"></i>
+            </div>
+            <div>
+              <h5 class="mb-0">Live Issue Tracking</h5>
+              <small style="opacity: 0.9;">Real-time civic issues in New Town</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-section">
+        <div class="search-section">
+          <div class="mb-3">
+            <label class="form-label fw-bold text-dark mb-2">Quick Destination Search</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fa fa-search text-muted"></i>
+              </span>
+              <input type="text" class="form-control" id="destinationSearch" placeholder="Search places in New Town..." />
+            </div>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-sm btn-outline-primary" onclick="searchDestination('Eco Park')">
+              <i class="fa fa-tree me-1"></i>Eco Park
+            </button>
+            <button class="btn btn-sm btn-outline-primary" onclick="searchDestination('City Centre')">
+              <i class="fa fa-building me-1"></i>City Centre
+            </button>
+            <button class="btn btn-sm btn-outline-primary" onclick="searchDestination('DLF IT Park')">
+              <i class="fa fa-laptop me-1"></i>DLF IT Park
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-section">
+        <div class="list-container">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item">
+              <div class="d-flex align-items-center">
+                <div class="priority-icon priority-high">
+                  <i class="fa fa-traffic-light text-white" style="font-size: 16px;"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center mb-1">
+                    <h6 class="mb-0 me-2">Broken Traffic Light</h6>
+                    <span class="badge badge-sos">SOS</span>
+                  </div>
+                  <p class="mb-1 text-muted small"><i class="fa fa-map-marker-alt me-1"></i>Major Arterial Road, New Town</p>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <small class="text-danger fw-bold">HIGH PRIORITY</small>
+                    <div class="d-flex gap-1">
+                      <button class="btn btn-sm route-btn" onclick="routeToIssue(22.580278, 88.458889)" title="Route to this issue">
+                        <i class="fa fa-route"></i>
+                      </button>
+                      <small class="text-muted align-self-center">2h ago</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="list-group-item">
+              <div class="d-flex align-items-center">
+                <div class="priority-icon priority-medium">
+                  <i class="fa fa-tint text-white" style="font-size: 16px;"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center mb-1">
+                    <h6 class="mb-0 me-2">Water Logging</h6>
+                    <span class="badge badge-sos">SOS</span>
+                  </div>
+                  <p class="mb-1 text-muted small"><i class="fa fa-map-marker-alt me-1"></i>Near Eco Park Gate 1</p>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <small class="text-warning fw-bold">MEDIUM PRIORITY</small>
+                    <div class="d-flex gap-1">
+                      <button class="btn btn-sm route-btn" onclick="routeToIssue(22.579167, 88.455556)" title="Route to this issue">
+                        <i class="fa fa-route"></i>
+                      </button>
+                      <small class="text-muted align-self-center">4h ago</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="list-group-item">
+              <div class="d-flex align-items-center">
+                <div class="priority-icon priority-normal">
+                  <i class="fa fa-road text-white" style="font-size: 16px;"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center mb-1">
+                    <h6 class="mb-0 me-2">Large Pothole</h6>
+                    <span class="badge badge-normal">REG</span>
+                  </div>
+                  <p class="mb-1 text-muted small"><i class="fa fa-map-marker-alt me-1"></i>Eco Space Business Park</p>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <small class="text-info fw-bold">NORMAL PRIORITY</small>
+                    <div class="d-flex gap-1">
+                      <button class="btn btn-sm route-btn" onclick="routeToIssue(22.580278, 88.458889)" title="Route to this issue">
+                        <i class="fa fa-route"></i>
+                      </button>
+                      <small class="text-muted align-self-center">6h ago</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-section">
+        <div class="card-footer">
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="d-flex flex-column align-items-center">
+                <div class="text-danger fw-bold" style="font-size: 1.5rem;">3</div>
+                <small class="text-muted fw-bold">SOS Issues</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="d-flex flex-column align-items-center">
+                <div class="text-primary fw-bold" style="font-size: 1.5rem;">2</div>
+                <small class="text-muted fw-bold">Regular</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="d-flex flex-column align-items-center">
+                <div class="text-success fw-bold" style="font-size: 1.5rem;">12</div>
+                <small class="text-muted fw-bold">Resolved</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position: relative;">
+    <div id="map" class="border"></div>
+    <button class="btn shadow-sm" id="fetchLocationBtn" onclick="fetchUserLocation()" style="position: absolute; top: 15px; right: 15px; z-index: 1000; border-radius: 8px; padding: 0.75rem; background: #e8f4fd; border: 1px solid #b3d9f7; color: #2c5aa0;" title="Get my location">
+      <i class="fa fa-crosshairs"></i>
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  let map, userLocation, routeControl, startMarker, endMarker;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    map = L.map('map').setView([22.580278, 88.458889], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    
+    startMarker = L.marker([0, 0], {
+      icon: L.divIcon({
+        html: '<div style="background: #34a853; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+        iconSize: [12, 12], iconAnchor: [6, 6]
+      })
+    });
+    
+    endMarker = L.marker([0, 0], {
+      icon: L.divIcon({
+        html: '<div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 12px solid #ea4335;"></div>',
+        iconSize: [12, 12], iconAnchor: [6, 12]
+      })
+    });
+    
+    addSampleMarkers();
+  });
+  
+  function addSampleMarkers() {
+    const issues = [
+      {lat: 22.580278, lng: 88.458889, title: 'Broken Traffic Light', type: 'sos'},
+      {lat: 22.579167, lng: 88.455556, title: 'Water Logging', type: 'sos'},
+      {lat: 22.582500, lng: 88.456111, title: 'Large Pothole', type: 'normal'}
+    ];
+    
+    issues.forEach(issue => {
+      const color = issue.type === 'sos' ? '#dc3545' : '#0d6efd';
+      const marker = L.marker([issue.lat, issue.lng], {
+        icon: L.divIcon({
+          html: `<div style="background: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">!</div>`,
+          iconSize: [20, 20], iconAnchor: [10, 10]
+        })
+      }).addTo(map);
+      
+      marker.bindPopup(`<strong>${issue.title}</strong><br><button onclick="routeToIssue(${issue.lat}, ${issue.lng})" class="btn btn-sm btn-primary mt-1">Route Here</button>`);
+    });
+  }
+  
+  function fetchUserLocation() {
+    const btn = document.getElementById('fetchLocationBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userLocation = [position.coords.latitude, position.coords.longitude];
+          startMarker.setLatLng(userLocation).addTo(map);
+          map.setView(userLocation, 16);
+          
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa fa-check"></i>';
+          btn.style.background = '#d4edda';
+          btn.style.borderColor = '#a3d9a4';
+          btn.style.color = '#155724';
+          
+          setTimeout(() => {
+            btn.innerHTML = '<i class="fa fa-crosshairs"></i>';
+            btn.style.background = '#e8f4fd';
+            btn.style.borderColor = '#b3d9f7';
+            btn.style.color = '#2c5aa0';
+          }, 3000);
+        },
+        (error) => {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa fa-exclamation-triangle"></i>';
+          btn.style.background = '#f8d7da';
+          btn.style.borderColor = '#f1aeb5';
+          btn.style.color = '#721c24';
+          alert('Location access denied');
+          
+          setTimeout(() => {
+            btn.innerHTML = '<i class="fa fa-crosshairs"></i>';
+            btn.style.background = '#e8f4fd';
+            btn.style.borderColor = '#b3d9f7';
+            btn.style.color = '#2c5aa0';
+          }, 3000);
+        }
+      );
+    }
+  }
+  
+  function routeToIssue(lat, lng) {
+    if (!userLocation) {
+      alert('Please click "My Location" button first');
+      return;
+    }
+    
+    endMarker.setLatLng([lat, lng]).addTo(map);
+    
+    if (routeControl) {
+      map.removeLayer(routeControl);
+    }
+    
+    routeControl = L.polyline([userLocation, [lat, lng]], {
+      color: '#4285f4', weight: 4, opacity: 0.8
+    }).addTo(map);
+    
+    map.fitBounds([userLocation, [lat, lng]], {padding: [20, 20]});
+  }
+  
+  function searchDestination(place) {
+    const destinations = {
+      'Eco Park': [22.579167, 88.455556],
+      'City Centre': [22.578889, 88.457222],
+      'DLF IT Park': [22.582500, 88.456111]
+    };
+    
+    if (destinations[place]) {
+      const [lat, lng] = destinations[place];
+      endMarker.setLatLng([lat, lng]).addTo(map);
+      map.setView([lat, lng], 16);
+    }
+  }
+</script>
+{% endblock %}

@@ -3,8 +3,8 @@
 {% block title %}Signup - CivicFix{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/auth-dark.css' %}">
-<link rel="stylesheet" href="{% static 'css/auth-fixes.css' %}">
+<link rel="stylesheet" href="{% static 'css/auth-home-style.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -141,7 +141,22 @@
       </form>
 
       <div class="auth-divider">
-        <span>or</span>
+        <span>or choose your role</span>
+      </div>
+
+      <div class="role-selection">
+        <a href="{% url 'signup_citizen_page' %}" class="role-btn citizen">
+          <i class="fas fa-user"></i>
+          <span>Citizen</span>
+        </a>
+        <a href="{% url 'signup_authority_page' %}" class="role-btn authority">
+          <i class="fas fa-shield-alt"></i>
+          <span>Authority</span>
+        </a>
+        <a href="{% url 'signup_admin_page' %}" class="role-btn admin">
+          <i class="fas fa-crown"></i>
+          <span>Admin</span>
+        </a>
       </div>
 
       <div class="auth-footer">
@@ -155,5 +170,5 @@
   </div>
 </div>
 
-<script src="{% static 'js/auth-animations.js' %}"></script>
+<script src="{% static 'js/auth-home-animations.js' %}"></script>
 {% endblock %}
